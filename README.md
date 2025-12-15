@@ -54,3 +54,4 @@ This is a next-generation healthcare intelligence platform that helps users unde
 - **Lab Report Analysis**: OCR and interpretation of medical reports.
 - **Personalized Plans**: Diet and lifestyle recommendations.
 - **3D Interactive UI**: Engaging and modern user interface.
+# Doctor.ai
