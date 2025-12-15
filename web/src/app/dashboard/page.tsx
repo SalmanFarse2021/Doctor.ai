@@ -10,7 +10,7 @@ import {
     Stethoscope, Pill, AlertCircle, CheckCircle2, Mic,
     FlaskConical, Clock, LogOut, MoreVertical
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
     Chart as ChartJS,
@@ -237,7 +237,7 @@ export default function Dashboard() {
             formData.append('file', file);
             formData.append('user_id', uid);
 
-            const response = await fetch('http://127.0.0.1:8000/api/labs/upload', {
+            const response = await fetch(`${API_BASE_URL}/api/labs/upload`, {
                 method: 'POST',
                 body: formData,
             });
@@ -353,7 +353,7 @@ export default function Dashboard() {
                     const uid = (session.user as any).id || session.user?.email;
 
                     // Sync User
-                    await fetch('http://127.0.0.1:8000/api/users/sync', {
+                    await fetch(`${API_BASE_URL}/api/users/sync`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -367,20 +367,20 @@ export default function Dashboard() {
                     });
 
                     // Fetch Visits
-                    const visitsRes = await fetch(`http://127.0.0.1:8000/api/users/${uid}/visits`);
+                    const visitsRes = await fetch(`${API_BASE_URL}/api/users/${uid}/visits`);
                     const visits = await visitsRes.json();
 
                     // Fetch Labs
-                    const labsRes = await fetch(`http://127.0.0.1:8000/api/users/${uid}/labs`);
+                    const labsRes = await fetch(`${API_BASE_URL}/api/users/${uid}/labs`);
                     const labs = await labsRes.json();
 
                     // Fetch Tracker Logs
-                    const logsRes = await fetch(`http://127.0.0.1:8000/api/tracking/logs?user_id=${uid}&days=7`);
+                    const logsRes = await fetch(`${API_BASE_URL}/api/tracking/logs?user_id=${uid}&days=7`);
                     const logs = await logsRes.json();
                     setTrackerLogs(logs);
 
                     // Fetch Health Score
-                    const scoreRes = await fetch(`http://127.0.0.1:8000/api/tracking/score?user_id=${uid}`);
+                    const scoreRes = await fetch(`${API_BASE_URL}/api/tracking/score?user_id=${uid}`);
                     const scoreData = await scoreRes.json();
                     setHealthScore(scoreData);
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { Mic, MicOff, Volume2, VolumeX, User, Activity, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function VoiceDoctorPage() {
@@ -74,7 +74,7 @@ export default function VoiceDoctorPage() {
             const fetchProfiles = async () => {
                 const uid = (session?.user as any).id || session?.user?.email;
                 try {
-                    const res = await fetch(`http://127.0.0.1:8000/api/users/${uid}/profiles`);
+                    const res = await fetch(`${API_BASE_URL}/api/users/${uid}/profiles`);
                     const data = await res.json();
                     setProfiles(data);
                     if (data.length > 0) setSelectedProfileId(data[0]._id);
@@ -102,7 +102,7 @@ export default function VoiceDoctorPage() {
 
         try {
             const uid = (session?.user as any).id || session?.user?.email;
-            const res = await fetch('http://127.0.0.1:8000/api/voice-chat', {
+            const res = await fetch(`${API_BASE_URL}/api/voice-chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

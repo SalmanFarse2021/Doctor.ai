@@ -8,7 +8,7 @@ import {
     Activity, Calendar, Moon, Droplets, Thermometer, Zap,
     TrendingUp, TrendingDown, Minus, Save, CheckCircle2, Heart, Stethoscope, ArrowLeft
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 import { Line } from 'react-chartjs-2';
 import {
@@ -64,12 +64,12 @@ export default function TrackerPage() {
                 const uid = (session.user as any).id || session.user?.email;
 
                 // Fetch Logs
-                const logsRes = await fetch(`http://127.0.0.1:8000/api/tracking/logs?user_id=${uid}&days=7`);
+                const logsRes = await fetch(`${API_BASE_URL}/api/tracking/logs?user_id=${uid}&days=7`);
                 const logsData = await logsRes.json();
                 setLogs(logsData);
 
                 // Fetch Score
-                const scoreRes = await fetch(`http://127.0.0.1:8000/api/tracking/score?user_id=${uid}`);
+                const scoreRes = await fetch(`${API_BASE_URL}/api/tracking/score?user_id=${uid}`);
                 const scoreData = await scoreRes.json();
                 setScore(scoreData);
 
@@ -106,7 +106,7 @@ export default function TrackerPage() {
             const uid = (session?.user as any).id || session?.user?.email;
             const today = new Date().toISOString().split('T')[0];
 
-            await fetch('http://127.0.0.1:8000/api/tracking/logs', {
+            await fetch(`${API_BASE_URL}/api/tracking/logs`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -129,11 +129,11 @@ export default function TrackerPage() {
             setTimeout(() => setSaved(false), 2000);
 
             // Refresh data
-            const logsRes = await fetch(`http://127.0.0.1:8000/api/tracking/logs?user_id=${uid}&days=7`);
+            const logsRes = await fetch(`${API_BASE_URL}/api/tracking/logs?user_id=${uid}&days=7`);
             const logsData = await logsRes.json();
             setLogs(logsData);
 
-            const scoreRes = await fetch(`http://127.0.0.1:8000/api/tracking/score?user_id=${uid}`);
+            const scoreRes = await fetch(`${API_BASE_URL}/api/tracking/score?user_id=${uid}`);
             const scoreData = await scoreRes.json();
             setScore(scoreData);
 

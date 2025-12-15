@@ -7,7 +7,7 @@ import {
     Calendar, FileText, ChevronRight, Clock, Activity,
     Download, Eye, FlaskConical, Stethoscope, Search, Filter, CheckCircle2, Trash2
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 import { useRouter } from 'next/navigation';
 
@@ -29,12 +29,12 @@ export default function HistoryPage() {
                 const uid = (session.user as any).id || session.user?.email;
 
                 // Fetch Visits
-                const visitsRes = await fetch(`http://127.0.0.1:8000/api/users/${uid}/visits`);
+                const visitsRes = await fetch(`${API_BASE_URL}/api/users/${uid}/visits`);
                 const visitsData = await visitsRes.json();
                 setVisits(visitsData);
 
                 // Fetch Labs
-                const labsRes = await fetch(`http://127.0.0.1:8000/api/users/${uid}/labs`);
+                const labsRes = await fetch(`${API_BASE_URL}/api/users/${uid}/labs`);
                 const labsData = await labsRes.json();
                 setLabs(labsData);
 
@@ -68,7 +68,7 @@ export default function HistoryPage() {
     const handleDeleteVisit = async (id: string) => {
         if (!confirm('Are you sure you want to delete this checkup record?')) return;
         try {
-            await fetch(`http://127.0.0.1:8000/api/visits/${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE_URL}/api/visits/${id}`, { method: 'DELETE' });
             setVisits(prev => prev.filter(v => v._id !== id));
         } catch (error) {
             console.error('Error deleting visit:', error);
@@ -78,7 +78,7 @@ export default function HistoryPage() {
     const handleDeleteLab = async (id: string) => {
         if (!confirm('Are you sure you want to delete this lab report?')) return;
         try {
-            await fetch(`http://127.0.0.1:8000/api/labs/${id}`, { method: 'DELETE' });
+            await fetch(`${API_BASE_URL}/api/labs/${id}`, { method: 'DELETE' });
             setLabs(prev => prev.filter(l => l._id !== id));
         } catch (error) {
             console.error('Error deleting lab:', error);

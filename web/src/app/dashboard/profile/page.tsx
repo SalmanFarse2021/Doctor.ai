@@ -5,7 +5,7 @@ import { useSession, signIn } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { User, Heart, Activity, AlertCircle, Save, Calendar, Phone, FileText, CheckCircle2, ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 export default function ProfilePage() {
@@ -43,7 +43,7 @@ export default function ProfilePage() {
         if (session?.user) {
             try {
                 const uid = (session?.user as any).id || session?.user?.email;
-                const res = await fetch(`http://127.0.0.1:8000/api/users/${uid}/profiles`);
+                const res = await fetch(`${API_BASE_URL}/api/users/${uid}/profiles`);
                 const data = await res.json();
                 if (Array.isArray(data)) {
                     setProfiles(data);
@@ -109,7 +109,7 @@ export default function ProfilePage() {
             const uid = (session?.user as any).id || session?.user?.email;
 
             if (selectedProfileId) {
-                await fetch(`http://127.0.0.1:8000/api/profiles/${selectedProfileId}`, {
+                await fetch(`${API_BASE_URL}/api/profiles/${selectedProfileId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -128,7 +128,7 @@ export default function ProfilePage() {
             }
 
             // Save Language Preference
-            await fetch(`http://127.0.0.1:8000/api/users/${uid}`, {
+            await fetch(`${API_BASE_URL}/api/users/${uid}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -199,7 +199,7 @@ export default function ProfilePage() {
         setLoading(true);
         try {
             const uid = (session?.user as any).id || session?.user?.email;
-            const res = await fetch('http://127.0.0.1:8000/api/integrations/google-fit/sync', {
+            const res = await fetch(`${API_BASE_URL}/api/integrations/google-fit/sync`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -226,7 +226,7 @@ export default function ProfilePage() {
         if (!newProfileName) return;
         try {
             const uid = (session?.user as any).id || session?.user?.email;
-            const res = await fetch(`http://127.0.0.1:8000/api/users/${uid}/profiles`, {
+            const res = await fetch(`${API_BASE_URL}/api/users/${uid}/profiles`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

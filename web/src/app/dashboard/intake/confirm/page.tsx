@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle2, XCircle, HelpCircle, ArrowRight, Loader2, Stethoscope, ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 import { Suspense } from 'react';
@@ -29,7 +29,7 @@ function ConfirmContent() {
             const fetchInitialPrediction = async () => {
                 try {
                     // 1. Fetch Draft to get all data
-                    const visitRes = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}`);
+                    const visitRes = await fetch(`${API_BASE_URL}/api/visits/${visitId}`);
                     if (!visitRes.ok) throw new Error("Visit not found");
                     const data = await visitRes.json();
                     setVisitData(data);
@@ -39,7 +39,7 @@ function ConfirmContent() {
                         let summary = null;
                         if (data.user_id) {
                             try {
-                                const profileRes = await fetch(`http://127.0.0.1:8000/api/users/${data.user_id}/profile`);
+                                const profileRes = await fetch(`${API_BASE_URL}/api/users/${data.user_id}/profile`);
                                 const profileData = await profileRes.json();
                                 if (profileData && profileData.status !== 'not_found') {
                                     summary = `Age: ${profileData.dob ? new Date().getFullYear() - new Date(profileData.dob).getFullYear() : 'Unknown'}, Gender: ${profileData.gender || 'Unknown'}, Conditions: ${profileData.conditions?.join(', ')}, Meds: ${profileData.medications?.join(', ')}`;
@@ -51,7 +51,7 @@ function ConfirmContent() {
                         }
 
                         // 3. Get Initial Prediction (to find missing symptoms)
-                        const predictRes = await fetch('http://127.0.0.1:8000/api/ai/predict-conditions', {
+                        const predictRes = await fetch(`${API_BASE_URL}/api/ai/predict-conditions`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -106,7 +106,7 @@ function ConfirmContent() {
             });
 
             // Call predict-conditions to finalize and save
-            const res = await fetch('http://127.0.0.1:8000/api/ai/predict-conditions', {
+            const res = await fetch(`${API_BASE_URL}/api/ai/predict-conditions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

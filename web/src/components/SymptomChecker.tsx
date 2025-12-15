@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Activity, AlertCircle, CheckCircle2, HelpCircle, Mic, Volume2, StopCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 import { useSession } from 'next-auth/react';
 
@@ -77,7 +77,7 @@ export default function SymptomChecker({ isOpen, onClose }: SymptomCheckerProps)
         setLoading(true);
         try {
             const uid = (session?.user as any)?.id || session?.user?.email;
-            const response = await fetch('http://127.0.0.1:8000/api/analyze', {
+            const response = await fetch(`${API_BASE_URL}/api/analyze`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Activity, ArrowRight, Loader2, Info, Phone, X } from 'lucide-react';
 import LabUploadForm from '@/components/LabUploadForm';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 import { Suspense } from 'react';
@@ -29,14 +29,14 @@ function ResultsContent() {
             const fetchResults = async () => {
                 try {
                     // 1. Fetch Draft to get all data
-                    const visitRes = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}`);
+                    const visitRes = await fetch(`${API_BASE_URL}/api/visits/${visitId}`);
                     if (!visitRes.ok) throw new Error("Visit not found");
                     const visitData = await visitRes.json();
 
                     if (visitData && visitData.extracted_data && visitData.refinements) {
                         // 1.5 Fetch Labs for this visit
                         try {
-                            const labsRes = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}/labs`);
+                            const labsRes = await fetch(`${API_BASE_URL}/api/visits/${visitId}/labs`);
                             if (labsRes.ok) {
                                 const labsData = await labsRes.json();
                                 setVisitLabs(labsData);
@@ -51,13 +51,13 @@ function ResultsContent() {
 
                         if (visitData.user_id) {
                             try {
-                                const profileRes = await fetch(`http://127.0.0.1:8000/api/users/${visitData.user_id}/profile`);
+                                const profileRes = await fetch(`${API_BASE_URL}/api/users/${visitData.user_id}/profile`);
                                 const profileData = await profileRes.json();
                                 if (profileData && profileData.status !== 'not_found') {
                                     profileSummary = `Age: ${profileData.dob ? new Date().getFullYear() - new Date(profileData.dob).getFullYear() : 'Unknown'}, Gender: ${profileData.gender || 'Unknown'}, Conditions: ${profileData.conditions?.join(', ')}, Meds: ${profileData.medications?.join(', ')}`;
                                 }
 
-                                const userRes = await fetch(`http://127.0.0.1:8000/api/users/${visitData.user_id}`);
+                                const userRes = await fetch(`${API_BASE_URL}/api/users/${visitData.user_id}`);
                                 const userData = await userRes.json();
                                 if (userData && userData.language) {
                                     language = userData.language;
@@ -68,7 +68,7 @@ function ResultsContent() {
                         }
 
                         // 3. Predict Conditions
-                        const predictRes = await fetch('http://127.0.0.1:8000/api/ai/predict-conditions', {
+                        const predictRes = await fetch(`${API_BASE_URL}/api/ai/predict-conditions`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -86,7 +86,7 @@ function ResultsContent() {
 
                         // 4. Get Test Recommendations
                         try {
-                            const testRes = await fetch('http://127.0.0.1:8000/api/ai/recommend-tests', {
+                            const testRes = await fetch(`${API_BASE_URL}/api/ai/recommend-tests`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({

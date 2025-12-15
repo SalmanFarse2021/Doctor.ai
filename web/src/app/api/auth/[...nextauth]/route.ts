@@ -1,5 +1,6 @@
 import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import { API_BASE_URL } from "@/lib/utils"
 
 const authOptions = {
     providers: [
@@ -29,7 +30,7 @@ const authOptions = {
                         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Best guess from server/client
                     };
 
-                    await fetch('http://127.0.0.1:8000/api/users/sync', {
+                    await fetch(`${API_BASE_URL}/api/users/sync`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

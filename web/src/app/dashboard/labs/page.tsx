@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import { FlaskConical, Save, Plus, Trash2, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 const LAB_TEMPLATES = {
@@ -100,7 +100,7 @@ function LabEntryContent() {
                 return;
             }
 
-            const res = await fetch('http://127.0.0.1:8000/api/labs', {
+            const res = await fetch(`${API_BASE_URL}/api/labs`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -183,7 +183,7 @@ function LabEntryContent() {
                                     formData.append('file', e.target.files[0]);
 
                                     try {
-                                        const res = await fetch('http://127.0.0.1:8000/api/labs/upload', {
+                                        const res = await fetch(`${API_BASE_URL}/api/labs/upload`, {
                                             method: 'POST',
                                             body: formData
                                         });

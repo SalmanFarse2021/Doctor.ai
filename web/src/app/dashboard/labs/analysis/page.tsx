@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Activity, ArrowRight, Loader2, Info, FlaskConical } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 import { Suspense } from 'react';
@@ -30,12 +30,12 @@ function LabAnalysisContent() {
                 // For now, we'll skip profile fetch unless we have a user ID from the lab/visit data
 
                 if (visitId) {
-                    const visitRes = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}/labs`);
+                    const visitRes = await fetch(`${API_BASE_URL}/api/visits/${visitId}/labs`);
                     const labs = await visitRes.json();
                     labsToAnalyze = labs.flatMap((l: any) => l.entries);
                     setLabData(labs);
                 } else if (labId) {
-                    const labRes = await fetch(`http://127.0.0.1:8000/api/labs/${labId}`);
+                    const labRes = await fetch(`${API_BASE_URL}/api/labs/${labId}`);
                     const lab = await labRes.json();
                     if (lab && lab.entries) {
                         labsToAnalyze = lab.entries;
@@ -48,7 +48,7 @@ function LabAnalysisContent() {
                 // Try to find user_id from visit or lab data
                 let userId = null;
                 if (visitId) {
-                    const visitRes = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}`);
+                    const visitRes = await fetch(`${API_BASE_URL}/api/visits/${visitId}`);
                     const visitData = await visitRes.json();
                     userId = visitData.user_id;
                 } else if (labData && labData[0]) {
@@ -56,14 +56,14 @@ function LabAnalysisContent() {
                 }
 
                 if (userId) {
-                    const userRes = await fetch(`http://127.0.0.1:8000/api/users/${userId}`);
+                    const userRes = await fetch(`${API_BASE_URL}/api/users/${userId}`);
                     const userData = await userRes.json();
                     if (userData && userData.language) {
                         language = userData.language;
                     }
                 }
                 if (labsToAnalyze.length > 0) {
-                    const interpretRes = await fetch('http://127.0.0.1:8000/api/ai/interpret-labs', {
+                    const interpretRes = await fetch(`${API_BASE_URL}/api/ai/interpret-labs`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

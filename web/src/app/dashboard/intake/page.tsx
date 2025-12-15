@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { FileText, Clock, Activity, User, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 function IntakeContent() {
@@ -30,7 +30,7 @@ function IntakeContent() {
         if (visitId) {
             const fetchVisit = async () => {
                 try {
-                    const res = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}`);
+                    const res = await fetch(`${API_BASE_URL}/api/visits/${visitId}`);
                     if (res.ok) {
                         const data = await res.json();
                         setFormData(prev => ({
@@ -57,10 +57,10 @@ function IntakeContent() {
             const fetchProfile = async () => {
                 try {
                     const uid = (session?.user as any).id || session?.user?.email;
-                    const res = await fetch(`http://127.0.0.1:8000/api/users/${uid}/profile`);
+                    const res = await fetch(`${API_BASE_URL}/api/users/${uid}/profile`);
                     const data = await res.json();
 
-                    const userRes = await fetch(`http://127.0.0.1:8000/api/users/${uid}`);
+                    const userRes = await fetch(`${API_BASE_URL}/api/users/${uid}`);
                     const userData = await userRes.json();
 
                     if (data && data.status !== 'not_found') {
@@ -105,7 +105,7 @@ function IntakeContent() {
         try {
             // 1. Extract structured symptoms using AI (Non-blocking for draft creation)
             try {
-                const extractRes = await fetch('http://127.0.0.1:8000/api/ai/extract-symptoms', {
+                const extractRes = await fetch(`${API_BASE_URL}/api/ai/extract-symptoms`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -134,7 +134,7 @@ function IntakeContent() {
             // If they edit symptoms, it's effectively a new analysis.
             // So creating a new draft (or overwriting) is fine, as long as the INPUTS were preserved.
 
-            const res = await fetch('http://127.0.0.1:8000/api/visits/draft', {
+            const res = await fetch(`${API_BASE_URL}/api/visits/draft`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

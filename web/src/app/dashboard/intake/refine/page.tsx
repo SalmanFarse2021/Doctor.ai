@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { CheckCircle2, XCircle, HelpCircle, ArrowRight, Activity, Loader2, ArrowLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 import { Suspense } from 'react';
@@ -25,7 +25,7 @@ function RefineContent() {
             const fetchRefinements = async () => {
                 try {
                     // 1. Fetch Draft to get extracted symptoms
-                    const visitRes = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}`);
+                    const visitRes = await fetch(`${API_BASE_URL}/api/visits/${visitId}`);
                     const visitData = await visitRes.json();
 
                     if (visitData && visitData.extracted_data && visitData.extracted_data.symptoms) {
@@ -41,7 +41,7 @@ function RefineContent() {
                         // Fetch Language
                         let language = 'English';
                         if (visitData.user_id) {
-                            const userRes = await fetch(`http://127.0.0.1:8000/api/users/${visitData.user_id}`);
+                            const userRes = await fetch(`${API_BASE_URL}/api/users/${visitData.user_id}`);
                             const userData = await userRes.json();
                             if (userData && userData.language) {
                                 language = userData.language;
@@ -49,7 +49,7 @@ function RefineContent() {
                         }
 
                         // 2. Ask AI for refinements
-                        const refineRes = await fetch('http://127.0.0.1:8000/api/ai/refine-symptoms', {
+                        const refineRes = await fetch(`${API_BASE_URL}/api/ai/refine-symptoms`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -85,7 +85,7 @@ function RefineContent() {
                 status
             }));
 
-            await fetch(`http://127.0.0.1:8000/api/visits/${visitId}/refinements`, {
+            await fetch(`${API_BASE_URL}/api/visits/${visitId}/refinements`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(refinementsList),

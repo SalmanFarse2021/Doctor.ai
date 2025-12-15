@@ -7,7 +7,7 @@ import {
     Activity, ArrowRight, Loader2, Info, Heart,
     Utensils, Moon, Droplets, Calendar, AlertTriangle, Pill, ChevronDown, Shield
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 import { useSession } from 'next-auth/react';
 
@@ -34,18 +34,18 @@ function HealthPlanContent() {
                 if (!visitId) return;
 
                 // 1. Fetch Visit Data (Diagnosis + Labs)
-                const visitRes = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}`);
+                const visitRes = await fetch(`${API_BASE_URL}/api/visits/${visitId}`);
                 const visitData = await visitRes.json();
 
                 // 2. Fetch Labs
-                const labsRes = await fetch(`http://127.0.0.1:8000/api/visits/${visitId}/labs`);
+                const labsRes = await fetch(`${API_BASE_URL}/api/visits/${visitId}/labs`);
                 const labsData = await labsRes.json();
                 const labs = labsData.flatMap((l: any) => l.entries);
 
                 // 3. Fetch Profile Summary
                 let profileSummary = null;
                 if (visitData.user_id) {
-                    const profileRes = await fetch(`http://127.0.0.1:8000/api/users/${visitData.user_id}/profile`);
+                    const profileRes = await fetch(`${API_BASE_URL}/api/users/${visitData.user_id}/profile`);
                     const profileData = await profileRes.json();
                     if (profileData && profileData.status !== 'not_found') {
                         profileSummary = `Age: ${profileData.dob ? new Date().getFullYear() - new Date(profileData.dob).getFullYear() : 'Unknown'}, Gender: ${profileData.gender || 'Unknown'}, Conditions: ${profileData.conditions?.join(', ')}, Meds: ${profileData.medications?.join(', ')}`;
@@ -54,7 +54,7 @@ function HealthPlanContent() {
 
                 // 4. Generate Plan
                 const uid = (session?.user as any)?.id || session?.user?.email;
-                const planRes = await fetch('http://127.0.0.1:8000/api/ai/generate-plan', {
+                const planRes = await fetch(`${API_BASE_URL}/api/ai/generate-plan`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

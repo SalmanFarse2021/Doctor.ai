@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FlaskConical, Save, Plus, Trash2, CheckCircle2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
 
 const LAB_TEMPLATES = {
@@ -96,7 +96,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                 return;
             }
 
-            const res = await fetch('http://127.0.0.1:8000/api/labs', {
+            const res = await fetch(`${API_BASE_URL}/api/labs`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -189,7 +189,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                             formData.append('file', fileInput.files[0]);
 
                             try {
-                                const res = await fetch('http://127.0.0.1:8000/api/labs/upload', {
+                                const res = await fetch(`${API_BASE_URL}/api/labs/upload`, {
                                     method: 'POST',
                                     body: formData
                                 });
