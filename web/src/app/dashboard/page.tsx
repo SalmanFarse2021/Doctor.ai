@@ -60,16 +60,16 @@ const SidebarItem = ({ icon: Icon, label, active, onClick, isDark }: any) => (
 const StatCard = ({ title, value, unit, trend, icon: Icon, color, isDark, onClick, active }: any) => (
     <div
         onClick={onClick}
-        className={cn("border p-5 rounded-2xl relative overflow-hidden group transition-all cursor-pointer",
+        className={cn("border p-4 md:p-5 rounded-2xl relative overflow-hidden group transition-all cursor-pointer min-h-[120px] md:min-h-[140px]",
             isDark ? "bg-[#0F1420] border-white/5 hover:border-white/10" : "bg-white border-slate-200 hover:border-slate-300 shadow-sm",
             active && (isDark ? "ring-1 ring-blue-500 bg-white/5" : "ring-2 ring-blue-500 bg-blue-50")
         )}>
         <div className={cn("absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity", color)}>
-            <Icon className="w-24 h-24 -mr-4 -mt-4" />
+            <Icon className="w-16 h-16 md:w-24 md:h-24 -mr-4 -mt-4" />
         </div>
-        <div className="flex justify-between items-start mb-4">
-            <div className={cn("p-2.5 rounded-xl", isDark ? "bg-white/5" : "bg-slate-100", color.replace('text-', 'text-').replace('500', '600'))}>
-                <Icon className={cn("w-5 h-5", color)} />
+        <div className="flex justify-between items-start mb-3 md:mb-4">
+            <div className={cn("p-2 md:p-2.5 rounded-xl", isDark ? "bg-white/5" : "bg-slate-100", color.replace('text-', 'text-').replace('500', '600'))}>
+                <Icon className={cn("w-4 h-4 md:w-5 md:h-5", color)} />
             </div>
             {trend && (
                 <div className={cn("flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg",
@@ -81,10 +81,10 @@ const StatCard = ({ title, value, unit, trend, icon: Icon, color, isDark, onClic
             )}
         </div>
         <div>
-            <h3 className={cn("text-xs font-medium uppercase tracking-wider mb-1", isDark ? "text-slate-400" : "text-slate-500")}>{title}</h3>
+            <h3 className={cn("text-[10px] md:text-xs font-medium uppercase tracking-wider mb-1", isDark ? "text-slate-400" : "text-slate-500")}>{title}</h3>
             <div className="flex items-baseline gap-1">
-                <span className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>{value}</span>
-                <span className={cn("text-sm font-medium", isDark ? "text-slate-500" : "text-slate-400")}>{unit}</span>
+                <span className={cn("text-xl md:text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>{value}</span>
+                <span className={cn("text-xs md:text-sm font-medium", isDark ? "text-slate-500" : "text-slate-400")}>{unit}</span>
             </div>
         </div>
     </div>
@@ -536,14 +536,29 @@ export default function Dashboard() {
 
             <SymptomChecker isOpen={isSymptomCheckerOpen} onClose={() => setIsSymptomCheckerOpen(false)} />
 
-            {/* Sidebar ... */}
-
+            {/* Mobile Sidebar Backdrop */}
+            <AnimatePresence>
+                {isSidebarOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="fixed inset-0 bg-black/50 z-30 md:hidden"
+                    />
+                )}
+            </AnimatePresence>
 
             {/* Sidebar */}
             <motion.aside
                 initial={false}
-                animate={{ width: isSidebarOpen ? 280 : 80 }}
-                className={cn("h-screen border-r flex flex-col z-20 relative transition-colors duration-500",
+                animate={{
+                    x: isSidebarOpen ? 0 : -280,
+                    width: 280
+                }}
+                className={cn(
+                    "h-screen border-r flex flex-col z-40 transition-colors duration-500",
+                    "fixed md:relative md:translate-x-0",
                     isDark ? "bg-[#0B0F19] border-white/5" : "bg-white border-slate-200"
                 )}
             >
@@ -622,23 +637,30 @@ export default function Dashboard() {
             </motion.aside>
 
             {/* Main Content */}
-            <main className="flex-1 h-screen overflow-y-auto custom-scrollbar relative">
+            <main className="flex-1 h-screen overflow-y-auto custom-scrollbar relative w-full">
                 {/* Header */}
-                <header className={cn("h-20 border-b backdrop-blur-xl sticky top-0 z-10 px-8 flex items-center justify-between transition-colors duration-500",
+                <header className={cn(
+                    "h-16 md:h-20 border-b backdrop-blur-xl sticky top-0 z-10 px-4 md:px-8 flex items-center justify-between transition-colors duration-500",
                     isDark ? "border-white/5 bg-[#0B0F19]/80" : "border-slate-200/60 bg-white/80"
                 )}>
-                    <div className="flex items-center gap-4">
-                        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className={cn("p-2 rounded-lg transition-colors", isDark ? "hover:bg-white/5 text-slate-400 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-900")}>
-                            <Menu className="w-5 h-5" />
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <button
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                            className={cn(
+                                "p-2 rounded-lg transition-colors",
+                                isDark ? "hover:bg-white/5 text-slate-400 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-900"
+                            )}
+                        >
+                            {isSidebarOpen ? <X className="w-5 h-5 md:hidden" /> : <Menu className="w-5 h-5" />}
                         </button>
                         <div>
-                            <h1 className={cn("text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>Dashboard</h1>
-                            <p className="text-xs text-slate-500">Welcome back, {session?.user?.name?.split(' ')[0]}</p>
+                            <h1 className={cn("text-lg md:text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>Dashboard</h1>
+                            <p className="text-xs text-slate-500 hidden sm:block">Welcome back, {session?.user?.name?.split(' ')[0]}</p>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="relative hidden md:block">
+                    <div className="flex items-center gap-2 md:gap-4">
+                        <div className="relative hidden lg:block">
                             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                             <input
                                 type="text"
@@ -701,16 +723,16 @@ export default function Dashboard() {
                             onClick={toggleTheme}
                             className={cn("p-2 rounded-full transition-colors", isDark ? "hover:bg-white/5 text-slate-400 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-900")}
                         >
-                            {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                            {isDark ? <Sun className="w-4 h-4 md:w-5 md:h-5" /> : <Moon className="w-4 h-4 md:w-5 md:h-5" />}
                         </button>
                         <div className="relative">
                             <button
                                 onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                                 className={cn("p-2 rounded-full relative transition-colors", isDark ? "hover:bg-white/5 text-slate-400 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-900")}
                             >
-                                <Bell className="w-5 h-5" />
+                                <Bell className="w-4 h-4 md:w-5 md:h-5" />
                                 {unreadCount > 0 && (
-                                    <span className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                                    <span className="absolute top-0.5 right-0.5 md:top-1 md:right-1 w-4 h-4 md:w-5 md:h-5 rounded-full bg-red-500 text-white text-[9px] md:text-[10px] font-bold flex items-center justify-center">
                                         {unreadCount}
                                     </span>
                                 )}
@@ -722,7 +744,8 @@ export default function Dashboard() {
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        className={cn("absolute right-0 mt-2 w-96 rounded-2xl border shadow-2xl overflow-hidden z-50",
+                                        className={cn(
+                                            "absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-md rounded-2xl border shadow-2xl overflow-hidden z-50",
                                             isDark ? "bg-[#0F1420] border-white/10" : "bg-white border-slate-200"
                                         )}
                                     >
@@ -792,21 +815,21 @@ export default function Dashboard() {
                         </div>
                         <button
                             onClick={() => window.location.href = '/dashboard/labs'}
-                            className="px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-purple-600/20"
+                            className="px-3 md:px-4 py-2 rounded-full bg-purple-600 hover:bg-purple-500 text-white text-xs md:text-sm font-medium transition-colors flex items-center gap-1.5 md:gap-2 shadow-lg shadow-purple-600/20"
                         >
                             <FlaskConical className="w-4 h-4" />
-                            <span>Enter Labs</span>
+                            <span className="hidden sm:inline">Enter Labs</span>
                         </button>
                         <button
                             onClick={() => window.location.href = '/dashboard/tracker'}
-                            className="px-4 py-2 rounded-full bg-green-600 hover:bg-green-500 text-white text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-green-600/20"
+                            className="px-3 md:px-4 py-2 rounded-full bg-green-600 hover:bg-green-500 text-white text-xs md:text-sm font-medium transition-colors flex items-center gap-1.5 md:gap-2 shadow-lg shadow-green-600/20"
                         >
                             <Activity className="w-4 h-4" />
-                            <span>Daily Tracker</span>
+                            <span className="hidden sm:inline">Daily Tracker</span>
                         </button>
                         <button
                             onClick={() => window.location.href = '/dashboard/history'}
-                            className="px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-white text-sm font-medium transition-colors flex items-center gap-2 shadow-lg shadow-slate-600/20"
+                            className="hidden md:flex px-4 py-2 rounded-full bg-slate-600 hover:bg-slate-500 text-white text-sm font-medium transition-colors items-center gap-2 shadow-lg shadow-slate-600/20"
                         >
                             <Clock className="w-4 h-4" />
                             <span>History</span>
@@ -815,7 +838,7 @@ export default function Dashboard() {
                 </header>
 
                 {/* Dashboard Content */}
-                <div className="p-8 max-w-7xl mx-auto space-y-8">
+                <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8">
 
                     {activeTab === 'settings' ? (
                         <SettingsView />
@@ -830,7 +853,7 @@ export default function Dashboard() {
                     ) : (
                         <>
                             {/* Stats Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                                 <StatCard
                                     title="Health Score"
                                     value={healthScore.score || 0}
@@ -877,18 +900,18 @@ export default function Dashboard() {
                                 />
                             </div>
 
-                            <div className="grid lg:grid-cols-3 gap-8">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
                                 {/* Main Chart */}
-                                <div className={cn("lg:col-span-2 border rounded-2xl p-6 transition-colors", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h2 className={cn("text-lg font-bold", isDark ? "text-white" : "text-slate-900")}>{selectedMetric} Trends</h2>
-                                        <select className={cn("border rounded-lg px-3 py-1.5 text-xs focus:outline-none", isDark ? "bg-white/5 border-white/10 text-slate-400" : "bg-slate-50 border-slate-200 text-slate-600")}>
+                                <div className={cn("lg:col-span-2 border rounded-2xl p-4 md:p-6 transition-colors", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+                                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 md:mb-6">
+                                        <h2 className={cn("text-base md:text-lg font-bold", isDark ? "text-white" : "text-slate-900")}>{selectedMetric} Trends</h2>
+                                        <select className={cn("border rounded-lg px-3 py-1.5 text-xs focus:outline-none w-full sm:w-auto", isDark ? "bg-white/5 border-white/10 text-slate-400" : "bg-slate-50 border-slate-200 text-slate-600")}>
                                             <option>Last 7 Days</option>
                                             <option>Last 30 Days</option>
                                             <option>Last Year</option>
                                         </select>
                                     </div>
-                                    <div className="h-[300px] w-full">
+                                    <div className="h-[200px] md:h-[300px] w-full">
                                         <Line
                                             data={healthScoreData}
                                             options={{
@@ -905,9 +928,8 @@ export default function Dashboard() {
                                 </div>
 
                                 {/* Recent Activity */}
-                                {/* Recent Activity */}
-                                <div className={cn("border rounded-2xl p-6 transition-colors", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
-                                    <h2 className={cn("text-lg font-bold mb-6", isDark ? "text-white" : "text-slate-900")}>Recent Activity</h2>
+                                <div className={cn("border rounded-2xl p-4 md:p-6 transition-colors", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+                                    <h2 className={cn("text-base md:text-lg font-bold mb-4 md:mb-6", isDark ? "text-white" : "text-slate-900")}>Recent Activity</h2>
                                     <div className="space-y-2">
                                         {recentActivities.length > 0 ? (
                                             recentActivities.map((activity, idx) => (
