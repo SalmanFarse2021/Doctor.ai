@@ -130,7 +130,7 @@ export default function Dashboard() {
     const { data: session } = useSession();
     const { isDark, toggleTheme } = useTheme();
     const [activeTab, setActiveTab] = useState('overview');
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isSymptomCheckerOpen, setIsSymptomCheckerOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [selectedMetric, setSelectedMetric] = useState('Health Score');
@@ -144,6 +144,23 @@ export default function Dashboard() {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    // Handle initial responsive sidebar state
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768) {
+                setIsSidebarOpen(true);
+            } else {
+                setIsSidebarOpen(false);
+            }
+        };
+
+        // Set initial state
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Load read notifications from localStorage
     useEffect(() => {
@@ -568,7 +585,7 @@ export default function Dashboard() {
                             <Activity className="w-5 h-5 text-white" />
                         </div>
                         {isSidebarOpen && (
-                            <span className={cn("text-xl font-bold whitespace-nowrap", isDark ? "text-white" : "text-slate-900")}>
+                            <span className={cn("text-xl font-bold whitespace-nowrap hidden md:block", isDark ? "text-white" : "text-slate-900")}>
                                 Doctor<span className="text-blue-500">.ai</span>
                             </span>
                         )}
@@ -651,7 +668,12 @@ export default function Dashboard() {
                                 isDark ? "hover:bg-white/5 text-slate-400 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-900"
                             )}
                         >
-                            {isSidebarOpen ? <X className="w-5 h-5 md:hidden" /> : <Menu className="w-5 h-5" />}
+                            {isSidebarOpen ? <X className="w-5 h-5 md:hidden" /> : (
+                                <>
+                                    <MoreVertical className="w-5 h-5 md:hidden" />
+                                    <Menu className="w-5 h-5 hidden md:block" />
+                                </>
+                            )}
                         </button>
                         <div>
                             <h1 className={cn("text-lg md:text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>Dashboard</h1>

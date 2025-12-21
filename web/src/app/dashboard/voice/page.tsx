@@ -148,8 +148,16 @@ export default function VoiceDoctorPage() {
     };
 
     return (
-        <div className={cn("min-h-screen p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
+        <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-2xl mx-auto flex flex-col items-center justify-center min-h-[80vh]">
+                <div className="w-full flex justify-start mb-4 md:hidden">
+                    <button
+                        onClick={() => window.history.back()}
+                        className={cn("flex items-center gap-2 text-sm font-medium transition-colors", isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900")}
+                    >
+                        <User className="w-4 h-4 rotate-180" /> Back
+                    </button>
+                </div>
 
                 {/* Profile Selector */}
                 <div className="mb-8">

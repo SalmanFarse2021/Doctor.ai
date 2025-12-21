@@ -242,10 +242,16 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className={cn("min-h-screen p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
+        <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-4xl mx-auto">
+                <button
+                    onClick={() => router.back()}
+                    className={cn("mb-6 flex items-center gap-2 md:hidden text-sm font-medium transition-colors", isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900")}
+                >
+                    <ArrowLeft className="w-4 h-4" /> Back
+                </button>
 
-                <header className="mb-8 flex justify-between items-center">
+                <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Health Profile</h1>
                         <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>Manage your personal health information and medical history.</p>

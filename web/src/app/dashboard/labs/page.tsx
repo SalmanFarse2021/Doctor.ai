@@ -134,7 +134,7 @@ function LabEntryContent() {
     };
 
     return (
-        <div className={cn("min-h-screen p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
+        <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-3xl mx-auto">
                 <button
                     onClick={() => router.back()}

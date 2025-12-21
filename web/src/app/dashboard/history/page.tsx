@@ -86,8 +86,15 @@ export default function HistoryPage() {
     };
 
     return (
-        <div className={cn("min-h-screen p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
+        <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-4xl mx-auto">
+                <button
+                    onClick={() => router.back()}
+                    className={cn("mb-6 flex items-center gap-2 md:hidden text-sm font-medium transition-colors", isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900")}
+                >
+                    <ChevronRight className="w-4 h-4 rotate-180" /> Back
+                </button>
+
                 <header className="mb-8">
                     <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Health Record</h1>
                     <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>A timeline of your visits, diagnoses, and reports.</p>
@@ -98,7 +105,7 @@ export default function HistoryPage() {
                     <div className={cn("flex p-1 rounded-xl border", isDark ? "bg-white/5 border-white/5" : "bg-white border-slate-200")}>
                         <button
                             onClick={() => setActiveTab('checkups')}
-                            className={cn("px-6 py-2 rounded-lg text-sm font-medium transition-all",
+                            className={cn("px-6 py-2 rounded-lg text-sm font-medium transition-all flex-1 md:flex-none",
                                 activeTab === 'checkups'
                                     ? (isDark ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "bg-blue-600 text-white shadow-lg shadow-blue-600/20")
                                     : (isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900")

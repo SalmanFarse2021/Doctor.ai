@@ -190,7 +190,7 @@ export default function TrackerPage() {
     };
 
     return (
-        <div className={cn("min-h-screen p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
+        <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-5xl mx-auto">
                 {/* Back Button */}
                 <button
@@ -206,13 +206,13 @@ export default function TrackerPage() {
                     <span className="font-medium">Back to Dashboard</span>
                 </button>
 
-                <header className="mb-8 flex justify-between items-end">
+                <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
                         <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Daily Tracker</h1>
                         <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>Monitor your vitals and symptoms daily.</p>
                     </div>
 
-                    <div className={cn("px-6 py-3 rounded-2xl border flex items-center gap-4", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+                    <div className={cn("px-6 py-3 rounded-2xl border flex items-center gap-4 w-fit", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
                         <div>
                             <span className={cn("text-xs font-bold uppercase tracking-wider block mb-1", isDark ? "text-slate-500" : "text-slate-400")}>Health Score</span>
                             <span className={cn("text-3xl font-bold",
