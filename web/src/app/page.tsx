@@ -322,7 +322,7 @@ export default function LandingPage() {
                                         <div className={cn("rounded-2xl rounded-tl-none p-5 border max-w-[90%] bg-slate-50 border-slate-100 shadow-sm dark:bg-white/5 dark:border-white/5"
                                         )}>
                                             <p className={cn("text-sm leading-relaxed text-slate-700 dark:text-slate-300")}>
-                                                Hello. I'm your AI health assistant. I see you uploaded a CBC report. Your <span className={cn("font-bold text-red-500 dark:text-red-400")}>Platelet Count is 95,000</span>, which is lower than normal (150k-450k).
+                                                Hello. I&apos;m your AI health assistant. I see you uploaded a CBC report. Your <span className={cn("font-bold text-red-500 dark:text-red-400")}>Platelet Count is 95,000</span>, which is lower than normal (150k-450k).
                                                 <br /><br />
                                                 Combined with your fever symptoms, this strongly suggests a viral infection. Do you have any body aches or rashes?
                                             </p>

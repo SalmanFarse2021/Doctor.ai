@@ -234,7 +234,7 @@ export default function TrackerPage() {
                     {/* Input Form */}
                     <div className={cn("lg:col-span-1 p-6 rounded-2xl border h-fit", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
                         <h2 className={cn("text-lg font-bold mb-6 flex items-center gap-2", isDark ? "text-white" : "text-slate-900")}>
-                            <Calendar className="w-5 h-5 text-blue-500" /> Today's Log
+                            <Calendar className="w-5 h-5 text-blue-500" /> Today&apos;s Log
                         </h2>
 
                         <div className="space-y-4">
