@@ -30,13 +30,19 @@ const authOptions = {
                         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Best guess from server/client
                     };
 
-                    await fetch(`${API_BASE_URL}/api/users/sync`, {
+                    console.log(`[NextAuth] Syncing user to: ${API_BASE_URL}/api/users/sync`);
+                    const res = await fetch(`${API_BASE_URL}/api/users/sync`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify(userData),
                     });
+
+                    if (!res.ok) {
+                        const errorText = await res.text();
+                        console.error(`[NextAuth] Sync failed. Status: ${res.status}. Response: ${errorText}`);
+                    }
                     return true;
                 } catch (error) {
                     console.error("Error syncing user:", error);
