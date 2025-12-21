@@ -189,38 +189,7 @@ export default function ProfilePage() {
         }
     };
 
-    const handleSyncFit = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        if (!(session as any)?.accessToken) {
-            signIn('google');
-            return;
-        }
 
-        setLoading(true);
-        try {
-            const uid = (session?.user as any).id || session?.user?.email;
-            const res = await fetch(`${API_BASE_URL}/api/integrations/google-fit/sync`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    access_token: (session as any).accessToken,
-                    user_id: uid,
-                    profile_id: selectedProfileId
-                })
-            });
-            const data = await res.json();
-            if (data.status === 'success') {
-                alert(`Synced! Steps: ${data.data.steps || 0}, HR: ${data.data.heart_rate_avg || 'N/A'}`);
-            } else {
-                alert('Sync failed: ' + data.error);
-            }
-        } catch (e) {
-            console.error(e);
-            alert('Sync error');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleAddProfile = async () => {
         if (!newProfileName) return;
@@ -739,34 +708,7 @@ export default function ProfilePage() {
                                 </div>
                             </section>
 
-                            <section className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
-                                <h2 className={cn("text-lg font-bold mb-6 flex items-center gap-2", isDark ? "text-white" : "text-slate-900")}>
-                                    <Activity className="w-5 h-5 text-orange-500" />
-                                    Connected Apps
-                                </h2>
-                                <div className="flex items-center justify-between p-4 rounded-xl border bg-white/5 border-white/10">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-3 bg-white rounded-full">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" alt="Google Fit" className="w-6 h-6" />
-                                        </div>
-                                        <div>
-                                            <h3 className={cn("font-bold", isDark ? "text-white" : "text-slate-900")}>Google Fit</h3>
-                                            <p className={cn("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>Sync steps, heart rate, and sleep data.</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        onClick={handleSyncFit}
-                                        disabled={loading}
-                                        className={cn("px-4 py-2 rounded-lg font-bold text-sm transition-all",
-                                            isDark ? "bg-blue-600 hover:bg-blue-500 text-white" : "bg-blue-600 hover:bg-blue-700 text-white",
-                                            loading && "opacity-50 cursor-not-allowed"
-                                        )}
-                                    >
-                                        {loading ? 'Syncing...' : 'Sync Now'}
-                                    </button>
-                                </div>
-                            </section>
+
                         </div>
                     </div>
                 )}

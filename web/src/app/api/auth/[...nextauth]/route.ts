@@ -9,7 +9,7 @@ const authOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
             authorization: {
                 params: {
-                    scope: "openid email profile https://www.googleapis.com/auth/fitness.activity.read https://www.googleapis.com/auth/fitness.heart_rate.read https://www.googleapis.com/auth/fitness.sleep.read",
+                    scope: "openid email profile",
                     prompt: "consent",
                     access_type: "offline",
                     response_type: "code"

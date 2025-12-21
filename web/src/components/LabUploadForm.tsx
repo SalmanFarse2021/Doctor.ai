@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FlaskConical, Save, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { cn, API_BASE_URL } from '@/lib/utils';
-import { useTheme } from '@/context/ThemeContext';
+
 
 const LAB_TEMPLATES = {
     CBC: [
@@ -30,7 +30,7 @@ interface LabUploadFormProps {
 
 export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps) {
     const { data: session } = useSession();
-    const { isDark } = useTheme();
+
 
     const [testType, setTestType] = useState('CBC');
     const [entries, setEntries] = useState<any[]>(LAB_TEMPLATES['CBC']);
@@ -121,14 +121,14 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
     };
 
     return (
-        <div className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+        <div className={cn("p-6 rounded-2xl border bg-white border-slate-200 shadow-sm dark:bg-[#0F1420] dark:border-white/5")}>
             <div className="flex gap-4 mb-8">
                 <button
                     onClick={() => handleTypeChange('CBC')}
                     className={cn("px-4 py-2 rounded-lg font-medium transition-all",
                         testType === 'CBC'
                             ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                            : isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10"
                     )}
                 >
                     CBC
@@ -138,7 +138,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                     className={cn("px-4 py-2 rounded-lg font-medium transition-all",
                         testType === 'LFT'
                             ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                            : isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10"
                     )}
                 >
                     LFT
@@ -152,7 +152,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                 )}
             </div>
 
-            <div className={cn("mb-8 p-6 rounded-xl border border-dashed text-center", isDark ? "border-white/10 bg-white/5" : "border-slate-300 bg-slate-50")}>
+            <div className={cn("mb-8 p-6 rounded-xl border border-dashed text-center border-slate-300 bg-slate-50 dark:border-white/10 dark:bg-white/5")}>
                 <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -173,8 +173,8 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                     <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
                         <FlaskConical className="w-6 h-6" />
                     </div>
-                    <span id="file-label-text" className={cn("font-medium", isDark ? "text-white" : "text-slate-900")}>Select Lab Report (PDF/Image)</span>
-                    <span className={cn("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>Click to browse</span>
+                    <span id="file-label-text" className={cn("font-medium text-slate-900 dark:text-white")}>Select Lab Report (PDF/Image)</span>
+                    <span className={cn("text-xs text-slate-500 dark:text-slate-400")}>Click to browse</span>
                 </label>
 
                 <button
@@ -217,8 +217,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                             }
                         }
                     }}
-                    className={cn("mt-4 px-6 py-2 rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed",
-                        isDark ? "bg-blue-600 text-white hover:bg-blue-500" : "bg-blue-600 text-white hover:bg-blue-700"
+                    className={cn("mt-4 px-6 py-2 rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed bg-blue-600 text-white hover:bg-blue-700 dark:hover:bg-blue-500"
                     )}
                 >
                     {loading ? 'Extracting...' : 'Extract Data'}
@@ -241,8 +240,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                                 value={entry.name}
                                 onChange={(e) => handleEntryChange(idx, 'name', e.target.value)}
                                 placeholder="Test Name"
-                                className={cn("w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50",
-                                    isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                                className={cn("w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-slate-50 border-slate-200 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white"
                                 )}
                             />
                         </div>
@@ -253,8 +251,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                                 value={entry.value || ''}
                                 onChange={(e) => handleEntryChange(idx, 'value', e.target.value)}
                                 placeholder="Value"
-                                className={cn("w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50",
-                                    isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900",
+                                className={cn("w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-slate-50 border-slate-200 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white",
                                     checkAbnormal(entry.value, entry.range) && "border-red-500 text-red-500 bg-red-500/10"
                                 )}
                             />
@@ -265,8 +262,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                                 value={entry.unit}
                                 onChange={(e) => handleEntryChange(idx, 'unit', e.target.value)}
                                 placeholder="Unit"
-                                className={cn("w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50",
-                                    isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                                className={cn("w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-slate-50 border-slate-200 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white"
                                 )}
                             />
                         </div>
@@ -276,8 +272,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                                 value={entry.range || ''}
                                 onChange={(e) => handleEntryChange(idx, 'range', e.target.value)}
                                 placeholder="Range"
-                                className={cn("w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50",
-                                    isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                                className={cn("w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-slate-50 border-slate-200 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white"
                                 )}
                             />
                         </div>
@@ -296,8 +291,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                 <button
                     type="button"
                     onClick={addEntry}
-                    className={cn("w-full py-3 rounded-xl border border-dashed flex items-center justify-center gap-2 transition-colors mt-4",
-                        isDark ? "border-white/10 hover:bg-white/5 text-slate-400" : "border-slate-300 hover:bg-slate-50 text-slate-500"
+                    className={cn("w-full py-3 rounded-xl border border-dashed flex items-center justify-center gap-2 transition-colors mt-4 border-slate-300 hover:bg-slate-50 text-slate-500 dark:border-white/10 dark:hover:bg-white/5 dark:text-slate-400"
                     )}
                 >
                     <Plus className="w-4 h-4" /> Add Row
@@ -307,8 +301,7 @@ export default function LabUploadForm({ visitId, onSuccess }: LabUploadFormProps
                     <button
                         type="submit"
                         disabled={loading}
-                        className={cn("px-8 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2",
-                            isDark ? "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/20" : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20",
+                        className={cn("px-8 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20 dark:hover:bg-blue-500",
                             loading && "opacity-50 cursor-not-allowed",
                             success && "bg-green-500 hover:bg-green-600 shadow-green-500/20"
                         )}

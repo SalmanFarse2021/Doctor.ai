@@ -10,6 +10,10 @@ services:
         value: 3.10.0
       - key: GOOGLE_API_KEY
         sync: false
+      - key: MONGODB_URL
+        sync: false
+      - key: DB_NAME
+        value: doctor_ai
       - key: FRONTEND_URL
         fromService:
           type: web

@@ -541,54 +541,6 @@ async def interpret_labs(request: LabInterpretationRequest):
     except Exception as e:
         return {"error": str(e)}
 
-class PlanGenerationRequest(BaseModel):
-    visit_id: Optional[str] = None
-    user_id: str
-    diagnosis: Optional[dict] = None
-    labs: Optional[List[dict]] = None
-    profile_summary: Optional[str] = None
-    language: str = "English"
-
-@app.post("/api/ai/generate-plan")
-async def generate_plan(request: PlanGenerationRequest):
-    try:
-        # Fetch recent logs
-        daily_logs = []
-        database = db.get_db()
-        if database is not None:
-            logs_collection = database["daily_logs"]
-            cursor = logs_collection.find({"user_id": request.user_id}).sort("date", -1).limit(3)
-            logs = await cursor.to_list(length=3)
-            for log in logs:
-                if "_id" in log:
-                    log["_id"] = str(log["_id"])
-                daily_logs.append(log)
-
-        result_data = await agent.generate_health_plan(request.diagnosis, request.labs, request.profile_summary, daily_logs, request.language)
-        if isinstance(result_data, str):
-            try:
-                result = json.loads(result_data)
-            except json.JSONDecodeError:
-                result = {"error": "Invalid JSON from AI", "raw": result_data}
-        else:
-            result = result_data
-        
-        # Save plan to database
-        plan = HealthPlan(
-            visit_id=request.visit_id,
-            user_id=request.user_id,
-            **result
-        )
-        
-        database = db.get_db()
-        if database is not None:
-            plans_collection = database["health_plans"]
-            res = await plans_collection.insert_one(plan.dict())
-            result["plan_id"] = str(res.inserted_id)
-            
-        return result
-    except Exception as e:
-        return {"error": str(e)}
 
 
 
@@ -804,7 +756,32 @@ async def generate_plan(request: HealthPlanRequest):
         daily_logs=daily_logs,
         language=request.language
     )
-    return plan
+    
+    if isinstance(plan, str):
+        try:
+             result = json.loads(plan)
+        except json.JSONDecodeError:
+             result = {"error": "Invalid JSON from AI", "raw": plan}
+    else:
+        result = plan
+
+    # Save plan to database
+    try:
+        db_plan = HealthPlan(
+            visit_id=request.visit_id,
+            user_id=request.user_id,
+            **result
+        )
+        
+        if database:
+            plans_collection = database["health_plans"]
+            res = await plans_collection.insert_one(db_plan.dict())
+            result["plan_id"] = str(res.inserted_id)
+    except Exception as e:
+        print(f"Error saving plan: {e}")
+        # Return result anyway
+
+    return result
 
 @app.post("/api/voice-chat")
 async def voice_chat(request: VoiceChatRequest):

@@ -82,8 +82,8 @@ export default function LabReportsView() {
         <div className="max-w-6xl mx-auto space-y-8">
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 className={cn("text-2xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Lab Reports</h2>
-                    <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>View and analyze your medical test results.</p>
+                    <h2 className={cn("text-2xl font-bold mb-2 text-slate-900 dark:text-white")}>Lab Reports</h2>
+                    <p className={cn("text-sm text-slate-500 dark:text-slate-400")}>View and analyze your medical test results.</p>
                 </div>
                 <button
                     onClick={() => setShowUpload(true)}
@@ -96,27 +96,27 @@ export default function LabReportsView() {
 
             {/* Stats Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+                <div className={cn("p-6 rounded-2xl border bg-white border-slate-200 shadow-sm dark:bg-[#0F1420] dark:border-white/5")}>
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-xl bg-purple-500/10 text-purple-500">
                             <FileText className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className={cn("text-sm font-medium", isDark ? "text-slate-400" : "text-slate-500")}>Total Reports</p>
-                            <h3 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>{LAB_REPORTS.length}</h3>
+                            <p className={cn("text-sm font-medium text-slate-500 dark:text-slate-400")}>Total Reports</p>
+                            <h3 className={cn("text-2xl font-bold text-slate-900 dark:text-white")}>{LAB_REPORTS.length}</h3>
                         </div>
                     </div>
                     <p className="text-xs text-slate-500">Last uploaded on Dec 10, 2024</p>
                 </div>
 
-                <div className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+                <div className={cn("p-6 rounded-2xl border bg-white border-slate-200 shadow-sm dark:bg-[#0F1420] dark:border-white/5")}>
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-xl bg-red-500/10 text-red-500">
                             <AlertTriangle className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className={cn("text-sm font-medium", isDark ? "text-slate-400" : "text-slate-500")}>Abnormal Results</p>
-                            <h3 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>
+                            <p className={cn("text-sm font-medium text-slate-500 dark:text-slate-400")}>Abnormal Results</p>
+                            <h3 className={cn("text-2xl font-bold text-slate-900 dark:text-white")}>
                                 {LAB_REPORTS.reduce((acc, r) => acc + r.abnormalCount, 0)}
                             </h3>
                         </div>
@@ -124,14 +124,14 @@ export default function LabReportsView() {
                     <p className="text-xs text-slate-500">Requires attention</p>
                 </div>
 
-                <div className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+                <div className={cn("p-6 rounded-2xl border bg-white border-slate-200 shadow-sm dark:bg-[#0F1420] dark:border-white/5")}>
                     <div className="flex items-center gap-4 mb-4">
                         <div className="p-3 rounded-xl bg-green-500/10 text-green-500">
                             <Activity className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className={cn("text-sm font-medium", isDark ? "text-slate-400" : "text-slate-500")}>Health Status</p>
-                            <h3 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>Stable</h3>
+                            <p className={cn("text-sm font-medium text-slate-500 dark:text-slate-400")}>Health Status</p>
+                            <h3 className={cn("text-2xl font-bold text-slate-900 dark:text-white")}>Stable</h3>
                         </div>
                     </div>
                     <p className="text-xs text-slate-500">Based on recent analysis</p>
@@ -139,20 +139,19 @@ export default function LabReportsView() {
             </div>
 
             {/* Trends Chart */}
-            <section className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+            <section className={cn("p-6 rounded-2xl border bg-white border-slate-200 shadow-sm dark:bg-[#0F1420] dark:border-white/5")}>
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h3 className={cn("text-lg font-bold flex items-center gap-2", isDark ? "text-white" : "text-slate-900")}>
+                        <h3 className={cn("text-lg font-bold flex items-center gap-2 text-slate-900 dark:text-white")}>
                             <TrendingUp className="w-5 h-5 text-blue-500" />
                             Biomarker Trends
                         </h3>
-                        <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>Track your key health metrics over time.</p>
+                        <p className={cn("text-sm text-slate-500 dark:text-slate-400")}>Track your key health metrics over time.</p>
                     </div>
                     <select
                         value={selectedMetric}
                         onChange={(e) => setSelectedMetric(e.target.value)}
-                        className={cn("px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50",
-                            isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                        className={cn("px-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 bg-slate-50 border-slate-200 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white"
                         )}
                     >
                         <option value="Glucose">Glucose</option>
@@ -177,9 +176,9 @@ export default function LabReportsView() {
             </section>
 
             {/* Reports List */}
-            <section className={cn("rounded-2xl border overflow-hidden", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
+            <section className={cn("rounded-2xl border overflow-hidden bg-white border-slate-200 shadow-sm dark:bg-[#0F1420] dark:border-white/5")}>
                 <div className="p-6 border-b border-slate-100 dark:border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <h3 className={cn("text-lg font-bold flex items-center gap-2", isDark ? "text-white" : "text-slate-900")}>
+                    <h3 className={cn("text-lg font-bold flex items-center gap-2 text-slate-900 dark:text-white")}>
                         <FileText className="w-5 h-5 text-purple-500" />
                         Recent Reports
                     </h3>
@@ -190,23 +189,21 @@ export default function LabReportsView() {
                             placeholder="Search reports..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className={cn("pl-10 pr-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-full md:w-64",
-                                isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
+                            className={cn("pl-10 pr-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-full md:w-64 bg-slate-50 border-slate-200 text-slate-900 dark:bg-white/5 dark:border-white/10 dark:text-white"
                             )}
                         />
                     </div>
                 </div>
                 <div className="divide-y divide-slate-100 dark:divide-white/5">
                     {filteredReports.map((report) => (
-                        <div key={report.id} className={cn("p-6 flex flex-col md:flex-row items-start md:items-center gap-6 transition-colors", isDark ? "hover:bg-white/5" : "hover:bg-slate-50")}>
+                        <div key={report.id} className={cn("p-6 flex flex-col md:flex-row items-start md:items-center gap-6 transition-colors hover:bg-slate-50 dark:hover:bg-white/5")}>
                             <div className="flex items-center gap-4 flex-1">
-                                <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0",
-                                    isDark ? "bg-blue-500/10 text-blue-500" : "bg-blue-50 text-blue-600"
+                                <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-500"
                                 )}>
                                     <FileText className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <h4 className={cn("font-bold text-lg", isDark ? "text-white" : "text-slate-900")}>{report.title}</h4>
+                                    <h4 className={cn("font-bold text-lg text-slate-900 dark:text-white")}>{report.title}</h4>
                                     <div className="flex items-center gap-4 text-sm text-slate-500 mt-1">
                                         <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {report.date}</span>
                                         <span>•</span>
@@ -217,8 +214,7 @@ export default function LabReportsView() {
 
                             <div className="flex flex-wrap gap-2">
                                 {Object.entries(report.key_metrics).slice(0, 3).map(([key, value]) => (
-                                    <div key={key} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium border",
-                                        isDark ? "border-white/10 bg-white/5 text-slate-300" : "border-slate-200 bg-slate-50 text-slate-700"
+                                    <div key={key} className={cn("px-3 py-1.5 rounded-lg text-xs font-medium border border-slate-200 bg-slate-50 text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
                                     )}>
                                         <span className="opacity-70">{key}:</span> <span className="font-bold">{value}</span>
                                     </div>
@@ -237,7 +233,7 @@ export default function LabReportsView() {
                                         Normal
                                     </span>
                                 )}
-                                <button className={cn("p-2 rounded-lg transition-colors", isDark ? "hover:bg-white/10 text-slate-400" : "hover:bg-slate-100 text-slate-500")}>
+                                <button className={cn("p-2 rounded-lg transition-colors hover:bg-slate-100 text-slate-500 dark:hover:bg-white/10 dark:text-slate-400")}>
                                     <ChevronRight className="w-5 h-5" />
                                 </button>
                             </div>
@@ -254,16 +250,16 @@ export default function LabReportsView() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className={cn("w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative", isDark ? "bg-[#0B0F19]" : "bg-white")}
+                            className={cn("w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl relative bg-white dark:bg-[#0B0F19]")}
                         >
                             <button
                                 onClick={() => setShowUpload(false)}
-                                className={cn("absolute top-4 right-4 p-2 rounded-full transition-colors z-10", isDark ? "hover:bg-white/10 text-white" : "hover:bg-slate-100 text-slate-900")}
+                                className={cn("absolute top-4 right-4 p-2 rounded-full transition-colors z-10 hover:bg-slate-100 text-slate-900 dark:hover:bg-white/10 dark:text-white")}
                             >
                                 <X className="w-6 h-6" />
                             </button>
                             <div className="p-8">
-                                <h2 className={cn("text-2xl font-bold mb-6", isDark ? "text-white" : "text-slate-900")}>Upload Lab Results</h2>
+                                <h2 className={cn("text-2xl font-bold mb-6 text-slate-900 dark:text-white")}>Upload Lab Results</h2>
                                 <LabUploadForm
                                     visitId="general_upload" // Placeholder for general uploads
                                     onSuccess={() => {
