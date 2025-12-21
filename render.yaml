@@ -39,3 +39,7 @@ services:
           property: url
       - key: NEXTAUTH_SECRET
         generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
