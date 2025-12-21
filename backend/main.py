@@ -23,9 +23,16 @@ import os
 
 app = FastAPI(lifespan=lifespan)
 
+# Configure CORS for both local and production
+allowed_origins = [
+    os.getenv("FRONTEND_URL", "http://localhost:3000"),
+    "http://localhost:3000",
+    "https://doctor-ai-01.onrender.com"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL", "http://localhost:3000")],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

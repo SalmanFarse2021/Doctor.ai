@@ -17,6 +17,15 @@ const authOptions = {
             }
         }),
     ],
+    secret: process.env.NEXTAUTH_SECRET,
+    session: {
+        strategy: "jwt" as const,
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+    },
+    pages: {
+        signIn: '/',
+        error: '/auth/error',
+    },
     callbacks: {
         async signIn({ user, account, profile }: any) {
             if (account?.provider === "google") {
@@ -27,7 +36,7 @@ const authOptions = {
                         email: user.email,
                         photo_url: user.image,
                         locale: profile?.locale,
-                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Best guess from server/client
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                     };
 
                     console.log(`[NextAuth] Syncing user to: ${API_BASE_URL}/api/users/sync`);
@@ -42,27 +51,42 @@ const authOptions = {
                     if (!res.ok) {
                         const errorText = await res.text();
                         console.error(`[NextAuth] Sync failed. Status: ${res.status}. Response: ${errorText}`);
+                        // Allow sign in even if sync fails, but log the error
+                        return true;
                     }
+
+                    const data = await res.json();
+                    console.log(`[NextAuth] User sync successful:`, data);
                     return true;
                 } catch (error) {
-                    console.error("Error syncing user:", error);
-                    return true; // Allow sign in even if sync fails? Or false? Let's allow for now but log.
+                    console.error("[NextAuth] Error syncing user:", error);
+                    // Allow sign in even if sync fails
+                    return true;
                 }
             }
             return true;
         },
-        async jwt({ token, account }: any) {
+        async jwt({ token, account, user }: any) {
             if (account) {
                 token.accessToken = account.access_token;
+            }
+            if (user) {
+                token.id = user.id;
             }
             return token;
         },
         async session({ session, token }: any) {
-            session.user.id = token.sub;
+            if (session.user) {
+                session.user.id = token.sub || token.id;
+            }
             session.accessToken = token.accessToken;
             return session;
         },
         async redirect({ url, baseUrl }: any) {
+            // Allows relative callback URLs
+            if (url.startsWith("/")) return `${baseUrl}${url}`;
+            // Allows callback URLs on the same origin
+            else if (new URL(url).origin === baseUrl) return url;
             return baseUrl + '/dashboard';
         },
     },
@@ -71,3 +95,4 @@ const authOptions = {
 const handler = NextAuth(authOptions)
 
 export { handler as GET, handler as POST }
+
