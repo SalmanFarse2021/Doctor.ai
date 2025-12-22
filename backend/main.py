@@ -27,7 +27,8 @@ app = FastAPI(lifespan=lifespan)
 allowed_origins = [
     os.getenv("FRONTEND_URL", "http://localhost:3000"),
     "http://localhost:3000",
-    "https://doctor-ai-01.onrender.com"
+    "https://doctor-ai-01.onrender.com",
+    "*"
 ]
 
 app.add_middleware(
