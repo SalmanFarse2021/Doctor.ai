@@ -1,63 +1,55 @@
-# AI Health Diagnostic & Guidance Assistant
+# Doctor.ai 🩺
 
-## Project Overview
-This is a next-generation healthcare intelligence platform that helps users understand their symptoms, explore possible conditions, interpret lab tests, and receive personalized diet/lifestyle guidance.
+**Doctor.ai** is an intelligent diagnostic assistant that leverages advanced AI to analyze user symptoms and lab reports, providing instant disease predictions and personalized, curative health plans.
 
-## Tech Stack
-- **Frontend**: Next.js 15, Tailwind CSS v4, Framer Motion, React Three Fiber
-- **Backend**: Python (FastAPI)
-- **AI**: OpenAI GPT / Custom Models (Planned)
+## 🚀 Key Features
 
-## Getting Started
+*   **Smart Diagnosis**: Analyzes natural language symptoms and medical history to predict potential conditions with probability scores.
+*   **Lab Report Analysis**: Extracts and interprets data from PDF lab reports to enhance diagnostic accuracy.
+*   **Curative Health Plans**: Generates actionable recovery roadmaps including tailored nutrition, lifestyle changes, hydration patterns, and OTC medication recommendations.
+*   **Secure Dashboard**: A user-friendly interface to manage checkup history, view health trends, and access personalized medical insights.
 
-### Prerequisites
-- Node.js 18+
-- Python 3.10+
+## 🛠️ Tech Stack
 
-### Frontend Setup
-1. Navigate to the `web` directory:
-   ```bash
-   cd web
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) to view the landing page.
+*   **Frontend**: Next.js 14, TypeScript, Tailwind CSS, Framer Motion
+*   **Backend**: FastAPI (Python), LangChain
+*   **AI Engine**: OpenAI GPT-4o
+*   **Database**: MongoDB
+
+## 📦 Getting Started
 
 ### Backend Setup
-1. Navigate to the `backend` directory:
-   ```bash
-   cd backend
-   ```
-2. Create a virtual environment:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Run the API server:
-   ```bash
-   uvicorn main:app --reload
-   ```
-   The API will be available at [http://localhost:8000](http://localhost:8000).
+1.  Navigate to the backend directory:
+    ```bash
+    cd backend
+    ```
+2.  Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+3.  Set up environment variables (`.env`):
+    ```env
+    OPENAI_API_KEY=your_key_here
+    MONGODB_URL=your_db_url
+    ```
+4.  Run the server:
+    ```bash
+    uvicorn main:app --reload
+    ```
 
-## Features
-- **Symptom Analysis**: NLP-based symptom extraction and matching.
-- **Lab Report Analysis**: OCR and interpretation of medical reports.
-- **Personalized Plans**: Diet and lifestyle recommendations.
-- **3D Interactive UI**: Engaging and modern user interface.
-# Doctor.ai
-# Doctor.ai
-# Doctor.ai
-# Doctor.ai
-# Doctor.ai
-# Doctor.ai
-# Doctor.ai
+### Frontend Setup
+1.  Navigate to the web directory:
+    ```bash
+    cd web
+    ```
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Run the development server:
+    ```bash
+    npm run dev
+    ```
+
+---
+*Note: This application provides educational health information and is not a substitute for professional medical advice.*
