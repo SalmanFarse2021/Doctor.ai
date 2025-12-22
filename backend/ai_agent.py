@@ -41,11 +41,11 @@ class DoctorAgent:
             raise ValueError("OPENAI_API_KEY not found in environment variables")
         
         self.llm = ChatOpenAI(
-            model="gpt-4o",
+            model="gpt-5.2",
             api_key=OPENAI_API_KEY,
             temperature=0.3,
             max_retries=1,
-            request_timeout=20
+            request_timeout=120
         )
 
     def _clean_response(self, text: str) -> str:
@@ -540,30 +540,35 @@ class DoctorAgent:
     async def generate_health_plan(self, diagnosis: dict = None, symptoms: str = None, labs: List[dict] = None, profile_summary: str = None, daily_logs: List[dict] = None, language: str = "English") -> dict:
         try:
             prompt_template = """
-            Create a health plan.
-            
+            Create a highly personalized health plan STRICTLY based on the identified disease/condition provided in the Diagnosis below.
+
             Diagnosis: {diagnosis}
             Symptoms: {symptoms}
             Labs: {labs}
             Profile: {profile_summary}
             Recent Daily Logs (Steps, HR, Sleep): {daily_logs}
             Language: {language}
-    
+
             Task:
-            1. Create a plan with Diet, Lifestyle, Hydration, Tracking, Warnings.
+            1. Create a plan with Diet, Lifestyle, Hydration, Tracking, Warnings TAILORED to the Diagnosis.
             2. Medication Education (OTC ONLY, NO PRESCRIPTIONS, NO ANTIBIOTICS, NO STEROIDS):
-               - Suggest 1-2 common OTC medicines SPECIFICALLY for the reported symptoms (e.g., Paracetamol for fever, Antihistamine for allergy).
+               - Suggest 1-2 common OTC medicines SPECIFICALLY for the reported symptoms/disease (e.g., Paracetamol for fever, Antihistamine for allergy).
                - Provide EDUCATIONAL details only.
                - STRICTLY FOLLOW the JSON structure below for medicines.
             3. Analyze Daily Logs if available.
             4. All content must be in {language}.
-    
+            5. CRITICAL: DO NOT PROVIDE GENERIC ADVICE.
+               - Diet must list foods that help the SPECIFIC disease.
+               - Lifestyle must suggest habits to manage the SPECIFIC disease.
+               - Hydration must adjust for the disease (e.g., more fluids for fever).
+               - Daily Tracking must monitor symptoms of the SPECIFIC disease.
+
             Return JSON:
             {{
-                "diet": ["Tip 1"],
-                "lifestyle": ["Tip 1"],
-                "hydration": "Goal",
-                "daily_tracking": ["Metric 1"],
+                "diet": ["Specific Diet Tip 1", "Specific Diet Tip 2"],
+                "lifestyle": ["Specific Lifestyle Tip 1", "Specific Lifestyle Tip 2"],
+                "hydration": "Specific Hydration Goal",
+                "daily_tracking": ["Specific Metric 1", "Specific Metric 2"],
                 "med_education": [
                     {{
                         "generic_name": "Generic Name",
