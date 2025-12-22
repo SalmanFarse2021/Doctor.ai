@@ -568,7 +568,7 @@ class DoctorAgent:
             {{
                 "diet": ["Specific Diet Tip 1", "Specific Diet Tip 2"],
                 "lifestyle": ["Specific Lifestyle Tip 1", "Specific Lifestyle Tip 2"],
-                "hydration": "Specific Hydration Goal",
+                "hydration": ["Specific Hydration Tip 1", "Specific Hydration Tip 2"],
                 "daily_tracking": ["Specific Metric 1", "Specific Metric 2"],
                 "med_education": [
                     {{

@@ -92,20 +92,27 @@ function HealthPlanContent() {
         );
     }
 
-    if (!plan) return null;
+    if (!plan) {
+        return (
+            <div className={cn("min-h-screen flex items-center justify-center p-8", isDark ? "bg-[#0B0F19]" : "bg-slate-50")}>
+                <div className="text-center max-w-md">
+                    <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                    <h2 className={cn("text-xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Unable to Load Plan</h2>
+                    <p className={cn("mb-6", isDark ? "text-slate-400" : "text-slate-600")}>
+                        We couldn't generate your health plan at this time. Please try again.
+                    </p>
+                    <button onClick={() => window.location.reload()} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold">
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
                 <header className="mb-8">
-                    <button
-                        onClick={() => router.back()}
-                        className={cn("mb-4 flex items-center gap-2 text-sm font-medium transition-colors",
-                            isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900"
-                        )}
-                    >
-                        <ArrowRight className="w-4 h-4 rotate-180" /> Back
-                    </button>
                     <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Your Health Plan</h1>
                     <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>A personalized roadmap to better health.</p>
                 </header>
@@ -185,7 +192,9 @@ function HealthPlanContent() {
                             </div>
                             <h2 className={cn("text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>Hydration</h2>
                         </div>
-                        <p className={cn("text-lg font-medium", isDark ? "text-blue-400" : "text-blue-600")}>{plan.hydration}</p>
+                        <p className={cn("text-sm leading-relaxed", isDark ? "text-slate-300" : "text-slate-600")}>
+                            {plan.hydration}
+                        </p>
                     </motion.section>
 
                     {/* Daily Tracking */}
@@ -210,7 +219,6 @@ function HealthPlanContent() {
                             ))}
                         </ul>
                     </motion.section>
-
                     {/* Med Education */}
                     <motion.section
                         initial={{ opacity: 0, y: 20 }}
@@ -331,7 +339,15 @@ function HealthPlanContent() {
                     </motion.section>
                 </div>
 
-                <div className="flex justify-center pt-12 pb-20">
+                <div className="flex justify-center gap-4 pt-12 pb-20">
+                    <button
+                        onClick={() => router.back()}
+                        className={cn("px-8 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2 border",
+                            isDark ? "bg-transparent border-white/10 hover:bg-white/5 text-slate-300" : "bg-white border-slate-200 hover:bg-slate-50 text-slate-700"
+                        )}
+                    >
+                        <ArrowRight className="w-5 h-5 rotate-180" /> Back
+                    </button>
                     <button
                         onClick={() => router.push('/dashboard')}
                         className={cn("px-8 py-3 rounded-xl font-bold transition-all shadow-lg flex items-center gap-2",
