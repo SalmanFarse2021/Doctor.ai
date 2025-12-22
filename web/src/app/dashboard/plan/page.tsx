@@ -98,6 +98,14 @@ function HealthPlanContent() {
         <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-4xl mx-auto">
                 <header className="mb-8">
+                    <button
+                        onClick={() => router.back()}
+                        className={cn("mb-4 flex items-center gap-2 text-sm font-medium transition-colors",
+                            isDark ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-slate-900"
+                        )}
+                    >
+                        <ArrowRight className="w-4 h-4 rotate-180" /> Back
+                    </button>
                     <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Your Health Plan</h1>
                     <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>A personalized roadmap to better health.</p>
                 </header>
@@ -215,9 +223,17 @@ function HealthPlanContent() {
                                 <Pill className="w-5 h-5" />
                             </div>
                             <div>
-                                <h2 className={cn("text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>Medication Education (OTC)</h2>
+                                <h2 className={cn("text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>Medication Recommendations (OTC)</h2>
                                 <p className={cn("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>Educational guidance only. Consult a doctor before use.</p>
                             </div>
+                        </div>
+
+                        {/* Critical Test Warning */}
+                        <div className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl mb-6 flex items-start gap-3">
+                            <AlertTriangle className="w-5 h-5 text-yellow-500 shrink-0 mt-0.5" />
+                            <p className={cn("text-sm font-medium", isDark ? "text-yellow-400" : "text-yellow-700")}>
+                                This website is under Test. Please consult with a Doctor before using any Medicine.
+                            </p>
                         </div>
 
                         <div className="space-y-4">

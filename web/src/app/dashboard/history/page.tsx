@@ -86,7 +86,7 @@ export default function HistoryPage() {
     };
 
     return (
-        <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
+        <div className={cn("min-h-screen p-4 md:p-8 pb-24 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-4xl mx-auto">
                 <button
                     onClick={() => router.back()}
@@ -163,7 +163,7 @@ export default function HistoryPage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
                                     key={visit._id}
-                                    className={cn("p-6 rounded-2xl border transition-all hover:shadow-lg group", isDark ? "bg-[#0F1420] border-white/5 hover:border-blue-500/30" : "bg-white border-slate-200 shadow-sm hover:border-blue-200")}
+                                    className={cn("p-4 md:p-6 rounded-2xl border transition-all hover:shadow-lg group", isDark ? "bg-[#0F1420] border-white/5 hover:border-blue-500/30" : "bg-white border-slate-200 shadow-sm hover:border-blue-200")}
                                 >
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                         <div className="flex items-start gap-4">
@@ -268,7 +268,7 @@ export default function HistoryPage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
                                     key={lab._id}
-                                    className={cn("p-6 rounded-2xl border transition-all hover:shadow-lg group", isDark ? "bg-[#0F1420] border-white/5 hover:border-purple-500/30" : "bg-white border-slate-200 shadow-sm hover:border-purple-200")}
+                                    className={cn("p-4 md:p-6 rounded-2xl border transition-all hover:shadow-lg group", isDark ? "bg-[#0F1420] border-white/5 hover:border-purple-500/30" : "bg-white border-slate-200 shadow-sm hover:border-purple-200")}
                                 >
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                         <div className="flex items-start gap-4">

@@ -237,13 +237,14 @@ class DoctorAgent:
             3. For each condition, list "matchingSymptoms" (what the user has) and "nonMatchingSymptoms" (key symptoms of the condition that the user has NOT reported yet).
             4. If 'Confirmation Answers' are provided, use them to rule in/out conditions.
             5. Assess overall urgency (High/Medium/Low).
+            6. CRITICAL: For "probability", provide a specific percentage (e.g., "85%") based on how well symptoms match.
 
             Return JSON:
             {{
                 "conditions": [
                     {{
                         "name": "Condition Name (English)",
-                        "probability": "High/Medium/Low",
+                        "probability": "Percentage (e.g., '85%')",
                         "rationale": "Explanation in {language}...",
                         "matchingSymptoms": ["symptom 1", "symptom 2"],
                         "nonMatchingSymptoms": ["symptom 3", "symptom 4"]
@@ -551,17 +552,17 @@ class DoctorAgent:
 
             Task:
             1. Create a plan with Diet, Lifestyle, Hydration, Tracking, Warnings TAILORED to the Diagnosis.
-            2. Medication Education (OTC ONLY, NO PRESCRIPTIONS, NO ANTIBIOTICS, NO STEROIDS):
-               - Suggest 1-2 common OTC medicines SPECIFICALLY for the reported symptoms/disease (e.g., Paracetamol for fever, Antihistamine for allergy).
-               - Provide EDUCATIONAL details only.
+            2. Medication Recommendations (OTC ONLY):
+               - Recommend effective OTC medicines to TREAT and CURE the identified disease/symptoms.
+               - Provide clear usage instructions for RECOVERY.
                - STRICTLY FOLLOW the JSON structure below for medicines.
             3. Analyze Daily Logs if available.
             4. All content must be in {language}.
             5. CRITICAL: DO NOT PROVIDE GENERIC ADVICE.
-               - Diet must list foods that help the SPECIFIC disease.
-               - Lifestyle must suggest habits to manage the SPECIFIC disease.
-               - Hydration must adjust for the disease (e.g., more fluids for fever).
-               - Daily Tracking must monitor symptoms of the SPECIFIC disease.
+               - Diet: List specific foods to EAT and AVOID to Cure/Treat the disease.
+               - Lifestyle: Suggest actionable habits to accelerate RECOVERY.
+               - Hydration: Prescribe exact fluid intake strategies for the condition.
+               - Daily Tracking: Monitor specific metrics to track RECOVERY progress.
 
             Return JSON:
             {{
