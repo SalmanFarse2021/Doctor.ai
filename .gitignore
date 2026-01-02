@@ -1,0 +1,17 @@
+.DS_Store
+.vscode/
+.idea/
+
+# Added by Agent
+.env
+.env.local
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.gemini/
+.agent/
+.next/
+dist/
+build/
