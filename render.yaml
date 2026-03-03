@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: doctor-ai-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: MONGODB_URL
+        sync: false
+      - key: DB_NAME
+        value: doctor_ai
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: doctor-ai-web
+          property: url
+
+  - type: web
+    name: doctor-ai-web
+    runtime: node
+    rootDir: web
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: doctor-ai-backend
+          property: url
+      - key: NEXTAUTH_URL
+        fromService:
+          type: web
+          name: doctor-ai-web
+          property: url
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false

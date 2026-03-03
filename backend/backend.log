@@ -1,0 +1,77 @@
+INFO:     Will watch for changes in these directories: ['/Users/mdsalmanfarse/Documents/Files/My Projects/Completed Projects/Doctor.ai/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [83382] using StatReload
+INFO:     Started server process [83474]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+Connected to MongoDB
+INFO:     127.0.0.1:53863 - "OPTIONS /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "GET /api/users/100170974977651235985/visits HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "GET /api/users/100170974977651235985/labs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "GET /api/tracking/logs?user_id=100170974977651235985&days=7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53864 - "POST /api/users/sync HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53863 - "GET /api/tracking/score?user_id=100170974977651235985 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53864 - "GET /api/users/100170974977651235985/visits HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53864 - "GET /api/users/100170974977651235985/labs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53864 - "GET /api/tracking/logs?user_id=100170974977651235985&days=7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53864 - "GET /api/tracking/score?user_id=100170974977651235985 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53874 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53874 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53875 - "GET /api/users/100170974977651235985 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53874 - "GET /api/users/100170974977651235985 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53900 - "OPTIONS /api/ai/extract-symptoms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53900 - "POST /api/ai/extract-symptoms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53900 - "OPTIONS /api/visits/draft HTTP/1.1" 200 OK
+Received draft request: user_id='100170974977651235985' profile_id=None symptoms='fever, cold, headec.  ' duration='1-2 days' severity=7 age=22 gender='Male' extracted_data={'symptoms': [{'name': 'fever', 'normalizedName': 'Fever', 'confidence': 0.99}, {'name': 'cold', 'normalizedName': 'Common cold', 'confidence': 0.7}, {'name': 'headec', 'normalizedName': 'Headache', 'confidence': 0.75}], 'duration': None, 'severity': None, 'redFlagsDetected': []} refinements=None confirmations=None diagnosis=None recommended_tests=None status='DRAFT' created_at=datetime.datetime(2025, 12, 22, 4, 51, 25, 771207)
+Inserting visit: {'user_id': '100170974977651235985', 'profile_id': None, 'symptoms': 'fever, cold, headec.  ', 'duration': '1-2 days', 'severity': 7, 'age': 22, 'gender': 'Male', 'extracted_data': {'symptoms': [{'name': 'fever', 'normalizedName': 'Fever', 'confidence': 0.99}, {'name': 'cold', 'normalizedName': 'Common cold', 'confidence': 0.7}, {'name': 'headec', 'normalizedName': 'Headache', 'confidence': 0.75}], 'duration': None, 'severity': None, 'redFlagsDetected': []}, 'refinements': None, 'confirmations': None, 'diagnosis': None, 'recommended_tests': None, 'status': 'DRAFT', 'created_at': datetime.datetime(2025, 12, 22, 4, 51, 25, 771207)}
+Visit created with ID: 6948ce4d355725a065c71a5f
+INFO:     127.0.0.1:53900 - "POST /api/visits/draft HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53900 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53900 - "GET /api/users/100170974977651235985 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53907 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53900 - "OPTIONS /api/ai/refine-symptoms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53907 - "GET /api/users/100170974977651235985 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53907 - "POST /api/ai/refine-symptoms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53900 - "POST /api/ai/refine-symptoms HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53914 - "OPTIONS /api/visits/6948ce4d355725a065c71a5f/refinements HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53914 - "POST /api/visits/6948ce4d355725a065c71a5f/refinements HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53914 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53917 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53914 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53917 - "OPTIONS /api/ai/predict-conditions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53914 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53914 - "POST /api/ai/predict-conditions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53917 - "POST /api/ai/predict-conditions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "POST /api/ai/predict-conditions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "GET /api/visits/6948ce4d355725a065c71a5f/labs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53958 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53958 - "GET /api/visits/6948ce4d355725a065c71a5f/labs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "GET /api/users/100170974977651235985 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53958 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "GET /api/users/100170974977651235985 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53958 - "POST /api/ai/predict-conditions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53958 - "OPTIONS /api/ai/recommend-tests HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "POST /api/ai/predict-conditions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53940 - "POST /api/ai/recommend-tests HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53958 - "POST /api/ai/recommend-tests HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53999 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53999 - "GET /api/visits/6948ce4d355725a065c71a5f/labs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54000 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53999 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54000 - "GET /api/visits/6948ce4d355725a065c71a5f/labs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53999 - "OPTIONS /api/ai/generate-plan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53999 - "POST /api/ai/generate-plan HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:54000 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54000 - "POST /api/ai/generate-plan HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:55667 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55667 - "GET /api/visits/6948ce4d355725a065c71a5f/labs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55667 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55667 - "OPTIONS /api/ai/generate-plan HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55667 - "POST /api/ai/generate-plan HTTP/1.1" 422 Unprocessable Entity
+INFO:     127.0.0.1:55721 - "GET /api/visits/6948ce4d355725a065c71a5f HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55721 - "GET /api/visits/6948ce4d355725a065c71a5f/labs HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55721 - "GET /api/users/100170974977651235985/profile HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55721 - "POST /api/ai/generate-plan HTTP/1.1" 422 Unprocessable Entity

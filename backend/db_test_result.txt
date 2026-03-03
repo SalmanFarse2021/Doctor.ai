@@ -1,0 +1,2 @@
+✅ Successfully connected to MongoDB!
+Available databases: ['doctor-ai', 'doctor_ai', 'doctor_ai_db', 'admin', 'local']

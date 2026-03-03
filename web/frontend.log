@@ -1,0 +1,31 @@
+
+> doctor-ai-web@0.1.0 dev
+> next dev
+
+   ▲ Next.js 14.1.0
+   - Local:        http://localhost:3000
+   - Environments: .env.local
+
+ ✓ Ready in 1983ms
+ ✓ Compiled /src/middleware in 136ms (165 modules)
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 2s (1380 modules)
+ ✓ Compiled in 408ms (698 modules)
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 936ms (1605 modules)
+ ○ Compiling /dashboard/intake ...
+ ✓ Compiled /dashboard/intake in 604ms (1615 modules)
+ ○ Compiling /dashboard/intake/refine ...
+ ✓ Compiled /dashboard/intake/refine in 575ms (1623 modules)
+ ✓ Compiled /dashboard/intake/confirm in 328ms (1392 modules)
+ ○ Compiling /dashboard/results ...
+ ✓ Compiled /dashboard/results in 574ms (1402 modules)
+ ✓ Compiled /dashboard/plan in 488ms (1416 modules)
+ ✓ Compiled in 1499ms (1383 modules)
+ ✓ Compiled in 704ms (1383 modules)
+ ✓ Compiled in 548ms (1383 modules)
+ ○ Compiling /api/auth/[...nextauth] ...
+ ✓ Compiled /api/auth/[...nextauth] in 2.5s (904 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 3s (2574 modules)
+ ✓ Compiled /api/auth/[...nextauth] in 329ms (1509 modules)
