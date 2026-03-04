@@ -1,12 +1,78 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { FileText, Clock, Activity, User, ArrowRight, AlertCircle, ArrowLeft } from 'lucide-react';
+import { FileText, Clock, Activity, User, ArrowRight, AlertCircle, ArrowLeft, Globe, Mic, Square } from 'lucide-react';
 import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
+
+const convertBengaliToEnglishNumbers = (str: string) => {
+    const bengaliNumbers = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+    return str?.replace(/[০-৯]/g, (match) => bengaliNumbers.indexOf(match).toString()) || '';
+};
+
+const translations = {
+    English: {
+        title: "Symptom Intake",
+        subtitle: "Describe your symptoms and start a new checkup.",
+        symptomsTitle: "What are your symptoms?",
+        symptomsPlaceholder: "e.g. I have a severe headache on my right side and feel nauseous...",
+        detailsTitle: "Details",
+        durationLabel: "Duration (How long?)",
+        durationOptions: {
+            "Less than 24 hours": "Less than 24 hours",
+            "1-2 days": "1-2 days",
+            "3-7 days": "3-7 days",
+            "1-2 weeks": "1-2 weeks",
+            "More than 2 weeks": "More than 2 weeks"
+        },
+        severityLabel: "Severity (1-10)",
+        aboutYouTitle: "About You",
+        ageLabel: "Age",
+        agePlaceholder: "Age",
+        genderLabel: "Gender",
+        genderOptions: {
+            "": "Select",
+            "Male": "Male",
+            "Female": "Female",
+            "Other": "Other"
+        },
+        backBtn: "Back",
+        savingBtn: "Saving...",
+        continueBtn: "Continue"
+    },
+    Bengali: {
+        title: "লক্ষণ ইনটেক (নতুন চেকআপ)",
+        subtitle: "আপনার লক্ষণগুলি বর্ণনা করুন এবং একটি নতুন চেকআপ শুরু করুন।",
+        symptomsTitle: "আপনার লক্ষণগুলি কী কী?",
+        symptomsPlaceholder: "যেমন: আমার ডান দিকে প্রচণ্ড মাথাব্যথা এবং বমি বমি ভাব আছে...",
+        detailsTitle: "বিস্তারিত",
+        durationLabel: "সময়কাল (কত দিন ধরে?)",
+        durationOptions: {
+            "Less than 24 hours": "২৪ ঘণ্টারও কম",
+            "1-2 days": "১-২ দিন",
+            "3-7 days": "৩-৭ দিন",
+            "1-2 weeks": "১-২ সপ্তাহ",
+            "More than 2 weeks": "২ সপ্তাহের বেশি"
+        },
+        severityLabel: "তীব্রতা (১-১০)",
+        aboutYouTitle: "আপনার সম্পর্কে",
+        ageLabel: "বয়স",
+        agePlaceholder: "বয়স",
+        genderLabel: "লিঙ্গ",
+        genderOptions: {
+            "": "নির্বাচন করুন",
+            "Male": "পুরুষ",
+            "Female": "নারী",
+            "Other": "অন্যান্য"
+        },
+        backBtn: "ফিরে যান",
+        savingBtn: "সেভ হচ্ছে...",
+        continueBtn: "চালিয়ে যান"
+    }
+};
 
 function IntakeContent() {
     const { data: session } = useSession();
@@ -15,6 +81,8 @@ function IntakeContent() {
     const searchParams = useSearchParams();
     const visitId = searchParams.get('visitId');
     const [loading, setLoading] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const recognitionRef = useRef<any>(null);
 
     const [formData, setFormData] = useState({
         symptoms: '',
@@ -51,6 +119,14 @@ function IntakeContent() {
         }
     }, [visitId]);
 
+    // Load language from local storage on mount
+    useEffect(() => {
+        const savedLang = localStorage.getItem('checkup-language');
+        if (savedLang && (savedLang === 'English' || savedLang === 'Bengali')) {
+            setFormData(prev => ({ ...prev, language: savedLang }));
+        }
+    }, []);
+
     // Pre-fill age/gender from profile if available (only if not loaded from visit)
     useEffect(() => {
         if (session?.user && !visitId) {
@@ -77,10 +153,10 @@ function IntakeContent() {
                             ...prev,
                             gender: data.gender || '',
                             age: age || '',
-                            language: userData.language || 'English'
                         }));
                     } else if (userData) {
-                        setFormData(prev => ({ ...prev, language: userData.language || 'English' }));
+                        // User has no extended profile, just basic DB user
+                        // Defaults are fine
                     }
                 } catch (error) {
                     console.error('Error fetching profile:', error);
@@ -134,6 +210,7 @@ function IntakeContent() {
             // If they edit symptoms, it's effectively a new analysis.
             // So creating a new draft (or overwriting) is fine, as long as the INPUTS were preserved.
 
+            const parsedAge = parseInt(convertBengaliToEnglishNumbers(formData.age));
             const res = await fetch(`${API_BASE_URL}/api/visits/draft`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -142,7 +219,7 @@ function IntakeContent() {
                     symptoms: formData.symptoms,
                     duration: formData.duration,
                     severity: formData.severity,
-                    age: parseInt(formData.age) || null,
+                    age: isNaN(parsedAge) ? null : parsedAge,
                     gender: formData.gender,
                     extracted_data: extractionData
                 }),
@@ -176,13 +253,109 @@ function IntakeContent() {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
+    const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newLang = e.target.value;
+        setFormData(prev => ({ ...prev, language: newLang }));
+        localStorage.setItem('checkup-language', newLang);
+        if (isRecording && recognitionRef.current) {
+            recognitionRef.current.stop();
+            setIsRecording(false);
+        }
+    };
+
+    useEffect(() => {
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+        };
+    }, []);
+
+    const toggleRecording = () => {
+        if (isRecording) {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+            setIsRecording(false);
+            return;
+        }
+
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            alert(formData.language === 'Bengali' ? 'আপনার ব্রাউজার ভয়েস টাইপিং সমর্থন করে না।' : 'Your browser does not support voice typing.');
+            return;
+        }
+
+        const recognition = new SpeechRecognition();
+        recognition.lang = formData.language === 'Bengali' ? 'bn-BD' : 'en-US';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        let currentTranscript = formData.symptoms;
+
+        recognition.onresult = (event: any) => {
+            let interimTranscript = '';
+            let finalTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                } else {
+                    interimTranscript += event.results[i][0].transcript;
+                }
+            }
+
+            const newText = currentTranscript + (currentTranscript && finalTranscript ? ' ' : '') + finalTranscript;
+            setFormData(prev => ({ ...prev, symptoms: newText + (interimTranscript ? ' ' + interimTranscript : '') }));
+
+            if (finalTranscript) {
+                currentTranscript = newText;
+            }
+        };
+
+        recognition.onerror = (event: any) => {
+            console.error('Speech recognition error', event.error);
+            setIsRecording(false);
+        };
+
+        recognition.onend = () => {
+            setIsRecording(false);
+        };
+
+        recognitionRef.current = recognition;
+        try {
+            recognition.start();
+            setIsRecording(true);
+        } catch (e) {
+            console.error(e);
+            setIsRecording(false);
+        }
+    };
+
+    const t = translations[formData.language as keyof typeof translations] || translations.English;
+
     return (
         <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-2xl mx-auto">
-                <header className="mb-8">
-                    <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Symptom Intake</h1>
-                    <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>Describe your symptoms to start a new checkup.</p>
-                </header>
+                <div className="flex justify-between items-start mb-8">
+                    <header>
+                        <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>{t.title}</h1>
+                        <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>{t.subtitle}</p>
+                    </header>
+                    <div className="flex items-center gap-2">
+                        <Globe className={cn("w-4 h-4", isDark ? "text-slate-400" : "text-slate-500")} />
+                        <select
+                            value={formData.language}
+                            onChange={handleLanguageChange}
+                            className={cn("text-sm p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
+                                isDark ? "bg-[#0F1420] border-white/10 text-white" : "bg-white border-slate-200 text-slate-900"
+                            )}
+                        >
+                            <option value="English">English</option>
+                            <option value="Bengali">বাংলা</option>
+                        </select>
+                    </div>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
 
@@ -190,29 +363,43 @@ function IntakeContent() {
                     <section className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
                         <h2 className={cn("text-lg font-bold mb-4 flex items-center gap-2", isDark ? "text-white" : "text-slate-900")}>
                             <FileText className="w-5 h-5 text-blue-500" />
-                            What are your symptoms?
+                            {t.symptomsTitle}
                         </h2>
-                        <textarea
-                            name="symptoms"
-                            value={formData.symptoms}
-                            onChange={handleChange}
-                            placeholder="E.g., I have a throbbing headache on the right side and nausea..."
-                            className={cn("w-full h-40 p-4 rounded-xl border resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
-                                isDark ? "bg-white/5 border-white/10 text-white placeholder:text-slate-500" : "bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400"
-                            )}
-                            required
-                        />
+                        <div className="relative">
+                            <textarea
+                                name="symptoms"
+                                value={formData.symptoms}
+                                onChange={handleChange}
+                                placeholder={t.symptomsPlaceholder}
+                                className={cn("w-full h-40 p-4 pb-16 rounded-xl border resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
+                                    isDark ? "bg-white/5 border-white/10 text-white placeholder:text-slate-500" : "bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400"
+                                )}
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={toggleRecording}
+                                className={cn("absolute bottom-4 right-4 p-3 rounded-full flex items-center justify-center transition-all shadow-lg",
+                                    isRecording
+                                        ? "bg-red-500 text-white animate-pulse hover:bg-red-600"
+                                        : (isDark ? "bg-blue-600 hover:bg-blue-500 text-white" : "bg-blue-600 hover:bg-blue-700 text-white")
+                                )}
+                                title={isRecording ? (formData.language === 'Bengali' ? 'বলা বন্ধ করুন' : 'Stop Recording') : (formData.language === 'Bengali' ? 'কথায় টাইপ করুন' : 'Start Voice Typing')}
+                            >
+                                {isRecording ? <Square className="w-5 h-5 fill-current" /> : <Mic className="w-5 h-5" />}
+                            </button>
+                        </div>
                     </section>
 
                     {/* Details */}
                     <section className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
                         <h2 className={cn("text-lg font-bold mb-6 flex items-center gap-2", isDark ? "text-white" : "text-slate-900")}>
                             <Clock className="w-5 h-5 text-purple-500" />
-                            Details
+                            {t.detailsTitle}
                         </h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-slate-500">Duration</label>
+                                <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-slate-500">{t.durationLabel}</label>
                                 <select
                                     name="duration"
                                     value={formData.duration}
@@ -221,15 +408,13 @@ function IntakeContent() {
                                         isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
                                     )}
                                 >
-                                    <option value="Less than 24 hours">Less than 24 hours</option>
-                                    <option value="1-2 days">1-2 days</option>
-                                    <option value="3-7 days">3-7 days</option>
-                                    <option value="1-2 weeks">1-2 weeks</option>
-                                    <option value="More than 2 weeks">More than 2 weeks</option>
+                                    {Object.entries(t.durationOptions).map(([key, value]) => (
+                                        <option key={key} value={key}>{value}</option>
+                                    ))}
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-slate-500">Severity (1-10)</label>
+                                <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-slate-500">{t.severityLabel}</label>
                                 <div className="flex items-center gap-4">
                                     <input
                                         type="range"
@@ -250,24 +435,25 @@ function IntakeContent() {
                     <section className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
                         <h2 className={cn("text-lg font-bold mb-6 flex items-center gap-2", isDark ? "text-white" : "text-slate-900")}>
                             <User className="w-5 h-5 text-green-500" />
-                            About You
+                            {t.aboutYouTitle}
                         </h2>
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>
-                                <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-slate-500">Age</label>
+                                <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-slate-500">{t.ageLabel}</label>
                                 <input
-                                    type="number"
+                                    type="text"
+                                    inputMode="numeric"
                                     name="age"
                                     value={formData.age}
                                     onChange={handleChange}
-                                    placeholder="Age"
+                                    placeholder={t.agePlaceholder}
                                     className={cn("w-full p-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all",
                                         isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
                                     )}
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-slate-500">Gender</label>
+                                <label className="block text-xs font-medium uppercase tracking-wider mb-2 text-slate-500">{t.genderLabel}</label>
                                 <select
                                     name="gender"
                                     value={formData.gender}
@@ -276,10 +462,9 @@ function IntakeContent() {
                                         isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-50 border-slate-200 text-slate-900"
                                     )}
                                 >
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                    <option value="Other">Other</option>
+                                    {Object.entries(t.genderOptions).map(([key, value]) => (
+                                        <option key={key} value={key}>{value}</option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -294,7 +479,7 @@ function IntakeContent() {
                             )}
                         >
                             <ArrowLeft className="w-5 h-5" />
-                            Back
+                            {t.backBtn}
                         </button>
 
                         <button
@@ -306,10 +491,10 @@ function IntakeContent() {
                             )}
                         >
                             {loading ? (
-                                <>Saving...</>
+                                <>{t.savingBtn}</>
                             ) : (
                                 <>
-                                    Continue
+                                    {t.continueBtn}
                                     <ArrowRight className="w-5 h-5" />
                                 </>
                             )}

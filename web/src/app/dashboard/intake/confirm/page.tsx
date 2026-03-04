@@ -6,8 +6,42 @@ import { motion } from 'framer-motion';
 import { CheckCircle2, XCircle, HelpCircle, ArrowRight, Loader2, Stethoscope, ArrowLeft } from 'lucide-react';
 import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
-
 import { Suspense } from 'react';
+
+const translations = {
+    English: {
+        loadingInitial: "Preparing verification questions...",
+        loadingResult: "Finalizing your results...",
+        errorTitle: "Something went wrong",
+        errorBtn: "Start Over",
+        title: "One Last Check",
+        subtitle: "We found some potential matches. Please verify if you have any of these other symptoms.",
+        possible: "Possible: ",
+        experience: "Do you also experience:",
+        yes: "Yes",
+        no: "No",
+        unsure: "Unsure",
+        backBtn: "Back",
+        processingBtn: "Finalizing...",
+        analyzeBtn: "See Diagnosis"
+    },
+    Bengali: {
+        loadingInitial: "যাচাইকরণ প্রশ্নাবলী প্রস্তুত করা হচ্ছে...",
+        loadingResult: "ফলাফল প্রস্তুত করা হচ্ছে...",
+        errorTitle: "কিছু একটা ভুল হয়েছে",
+        errorBtn: "আবার শুরু করুন",
+        title: "শেষবার যাচাই করুন",
+        subtitle: "আমরা কিছু সম্ভাব্য মিল পেয়েছি। অনুগ্রহ করে নিশ্চিত করুন আপনার এই অন্যান্য লক্ষণগুলির কোনটি আছে কিনা।",
+        possible: "সম্ভাব্য: ",
+        experience: "আপনার কি এ বিষয়ে অভিজ্ঞতা আছে:",
+        yes: "হ্যাঁ",
+        no: "না",
+        unsure: "নিশ্চিত নই",
+        backBtn: "ফিরে যান",
+        processingBtn: "প্রসেস করা হচ্ছে...",
+        analyzeBtn: "রোগ নির্ণয় দেখুন"
+    }
+};
 
 function ConfirmContent() {
     const searchParams = useSearchParams();
@@ -21,8 +55,8 @@ function ConfirmContent() {
     const [selections, setSelections] = useState<Record<string, string>>({});
     const [visitData, setVisitData] = useState<any>(null);
     const [profileSummary, setProfileSummary] = useState<string | null>(null);
-
     const [error, setError] = useState<string | null>(null);
+    const [language, setLanguage] = useState('English');
 
     useEffect(() => {
         if (visitId) {
@@ -49,6 +83,13 @@ function ConfirmContent() {
                                 console.warn("Profile fetch failed", e);
                             }
                         }
+                        // Fetch Language from local storage
+                        let currentLang = 'English';
+                        const savedLang = localStorage.getItem('checkup-language');
+                        if (savedLang && (savedLang === 'English' || savedLang === 'Bengali')) {
+                            currentLang = savedLang;
+                        }
+                        setLanguage(currentLang);
 
                         // 3. Get Initial Prediction (to find missing symptoms)
                         const predictRes = await fetch(`${API_BASE_URL}/api/ai/predict-conditions`, {
@@ -58,7 +99,8 @@ function ConfirmContent() {
                                 visit_id: visitId,
                                 symptoms: data.extracted_data.symptoms,
                                 refinements: data.refinements,
-                                profile_summary: summary
+                                profile_summary: summary,
+                                language: currentLang
                             }),
                         });
                         if (!predictRes.ok) throw new Error("Prediction failed");
@@ -114,7 +156,8 @@ function ConfirmContent() {
                     symptoms: visitData.extracted_data.symptoms,
                     refinements: visitData.refinements,
                     confirmations: confirmationsList,
-                    profile_summary: profileSummary
+                    profile_summary: profileSummary,
+                    language: language
                 }),
             });
 
@@ -130,12 +173,14 @@ function ConfirmContent() {
         }
     };
 
+    const t = translations[language as keyof typeof translations] || translations.English;
+
     if (loading) {
         return (
             <div className={cn("min-h-screen flex items-center justify-center", isDark ? "bg-[#0B0F19]" : "bg-slate-50")}>
                 <div className="text-center">
                     <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
-                    <p className={isDark ? "text-slate-400" : "text-slate-600"}>Preparing verification questions...</p>
+                    <p className={isDark ? "text-slate-400" : "text-slate-600"}>{t.loadingInitial}</p>
                 </div>
             </div>
         );
@@ -146,10 +191,10 @@ function ConfirmContent() {
             <div className={cn("min-h-screen flex items-center justify-center p-8", isDark ? "bg-[#0B0F19]" : "bg-slate-50")}>
                 <div className="text-center max-w-md">
                     <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h2 className={cn("text-xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Something went wrong</h2>
+                    <h2 className={cn("text-xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>{t.errorTitle}</h2>
                     <p className={cn("mb-6", isDark ? "text-slate-400" : "text-slate-600")}>{error}</p>
                     <button onClick={() => router.push('/dashboard/intake')} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold">
-                        Start Over
+                        {t.errorBtn}
                     </button>
                 </div>
             </div>
@@ -161,7 +206,7 @@ function ConfirmContent() {
             <div className={cn("min-h-screen flex items-center justify-center", isDark ? "bg-[#0B0F19]" : "bg-slate-50")}>
                 <div className="text-center">
                     <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
-                    <p className={isDark ? "text-slate-400" : "text-slate-600"}>Finalizing your results...</p>
+                    <p className={isDark ? "text-slate-400" : "text-slate-600"}>{t.loadingResult}</p>
                 </div>
             </div>
         );
@@ -171,8 +216,8 @@ function ConfirmContent() {
         <div className={cn("min-h-screen p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-3xl mx-auto">
                 <header className="mb-8">
-                    <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>One Last Check</h1>
-                    <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>We found some potential matches. Please verify if you have any of these other symptoms.</p>
+                    <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>{t.title}</h1>
+                    <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>{t.subtitle}</p>
                 </header>
 
                 <div className="space-y-8">
@@ -180,10 +225,10 @@ function ConfirmContent() {
                         <section key={idx} className={cn("p-6 rounded-2xl border", isDark ? "bg-[#0F1420] border-white/5" : "bg-white border-slate-200 shadow-sm")}>
                             <h2 className={cn("text-lg font-bold mb-2 flex items-center gap-2", isDark ? "text-white" : "text-slate-900")}>
                                 <Stethoscope className="w-5 h-5 text-purple-500" />
-                                Possible: {condition.name}
+                                {t.possible} {condition.name}
                             </h2>
                             <p className={cn("text-sm mb-4", isDark ? "text-slate-400" : "text-slate-500")}>
-                                Do you also experience:
+                                {t.experience}
                             </p>
                             <div className="space-y-4">
                                 {condition.nonMatchingSymptoms.map((symptom: string) => (
@@ -198,7 +243,7 @@ function ConfirmContent() {
                                                         : isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                                 )}
                                             >
-                                                <CheckCircle2 className="w-4 h-4" /> Yes
+                                                <CheckCircle2 className="w-4 h-4" /> {t.yes}
                                             </button>
                                             <button
                                                 onClick={() => handleSelect(condition.name, symptom, 'No')}
@@ -208,7 +253,7 @@ function ConfirmContent() {
                                                         : isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                                 )}
                                             >
-                                                <XCircle className="w-4 h-4" /> No
+                                                <XCircle className="w-4 h-4" /> {t.no}
                                             </button>
                                             <button
                                                 onClick={() => handleSelect(condition.name, symptom, 'Unsure')}
@@ -218,7 +263,7 @@ function ConfirmContent() {
                                                         : isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                                 )}
                                             >
-                                                <HelpCircle className="w-4 h-4" /> Unsure
+                                                <HelpCircle className="w-4 h-4" /> {t.unsure}
                                             </button>
                                         </div>
                                     </div>
@@ -236,7 +281,7 @@ function ConfirmContent() {
                         )}
                     >
                         <ArrowLeft className="w-5 h-5" />
-                        Back
+                        {t.backBtn}
                     </button>
 
                     <button
@@ -248,10 +293,10 @@ function ConfirmContent() {
                         )}
                     >
                         {submitting ? (
-                            <>Finalizing...</>
+                            <>{t.processingBtn}</>
                         ) : (
                             <>
-                                See Diagnosis
+                                {t.analyzeBtn}
                                 <ArrowRight className="w-5 h-5" />
                             </>
                         )}

@@ -7,8 +7,74 @@ import { AlertTriangle, CheckCircle2, Activity, ArrowRight, Loader2, Info, Phone
 import LabUploadForm from '@/components/LabUploadForm';
 import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
-
 import { Suspense } from 'react';
+
+const translations = {
+    English: {
+        loading: "Analyzing symptoms and clinical data...",
+        errorTitle: "Analysis Failed",
+        errorBtn: "Start New Checkup",
+        unexpectedTitle: "Unexpected Results",
+        retryBtn: "Retry",
+        title: "Analysis Results",
+        subtitleLabs: "Based on your symptoms, profile, and lab reports.",
+        subtitleNoLabs: "Based on your symptoms and profile.",
+        urgencyTitle: "High Diagnostic Alert",
+        urgencyDesc: "Please consult a doctor immediately.",
+        emergencyTitle: "Emergency Alert Detected",
+        emergencyDesc: "Your symptoms indicate a potentially serious condition requiring immediate medical attention.",
+        redFlags: "Red Flags:",
+        callBtn: "Call 911",
+        hospitalBtn: "Find Nearest Hospital",
+        match: "Match",
+        symptomsMatched: "Symptoms Matched",
+        notMentioned: "Not Mentioned",
+        labData: "Analyzed Lab Data",
+        range: "Range",
+        wantMoreAccurate: "Want a more accurate diagnosis?",
+        uploadDesc: "Uploading your recent lab reports allows our AI to combine clinical data with your symptoms for a more accurate result.",
+        uploadBtn: "Upload Lab Report",
+        suggestedTests: "Suggested Tests",
+        urgent: "Urgent",
+        measures: "What it measures:",
+        prep: "Preparation:",
+        backToDash: "Back to Dashboard",
+        seeHealthPlan: "See Health Plan",
+        uploadTitle: "Upload Lab Report"
+    },
+    Bengali: {
+        loading: "লক্ষণ এবং ক্লিনিকাল ডেটা বিশ্লেষণ করা হচ্ছে...",
+        errorTitle: "বিশ্লেষণ ব্যর্থ হয়েছে",
+        errorBtn: "নতুন চেকআপ শুরু করুন",
+        unexpectedTitle: "অপ্রত্যাশিত ফলাফল",
+        retryBtn: "পুনরায় চেষ্টা করুন",
+        title: "বিশ্লেষণের ফলাফল",
+        subtitleLabs: "আপনার লক্ষণ, প্রোফাইল এবং ল্যাব রিপোর্টের উপর ভিত্তি করে।",
+        subtitleNoLabs: "আপনার লক্ষণ এবং প্রোফাইলের উপর ভিত্তি করে।",
+        urgencyTitle: "উচ্চ ডায়াগনস্টিক সতর্কতা",
+        urgencyDesc: "অনুগ্রহ করে অবিলম্বে চিকিৎসকের পরামর্শ নিন।",
+        emergencyTitle: "জরুরী সতর্কতা সনাক্ত করা হয়েছে",
+        emergencyDesc: "আপনার লক্ষণগুলি একটি সম্ভাব্য গুরুতর অবস্থার ইঙ্গিত দেয় যার জন্য অবিলম্বে চিকিৎসা মনোযোগের প্রয়োজন।",
+        redFlags: "বিপজ্জনক লক্ষণ (Red Flags):",
+        callBtn: "কল করুন (৯৯৯)",
+        hospitalBtn: "নিকটস্থ হাসপাতাল খুঁজুন",
+        match: "মিল",
+        symptomsMatched: "লক্ষণ মিলেছে",
+        notMentioned: "উল্লেখ করা হয়নি",
+        labData: "বিশ্লেষিত ল্যাব ডেটা",
+        range: "রেঞ্জ",
+        wantMoreAccurate: "আরও নির্ভুল ডায়াগনস্টিক চান?",
+        uploadDesc: "আপনার সাম্প্রতিক ল্যাব রিপোর্ট আপলোড করলে আমাদের AI আপনার লক্ষণগুলির সাথে ক্লিনিকাল ডেটা একত্রিত করে আরও সঠিক ফলাফল দিতে পারে।",
+        uploadBtn: "ল্যাব রিপোর্ট আপলোড করুন",
+        suggestedTests: "প্রস্তাবিত টেস্ট",
+        urgent: "জরুরী",
+        measures: "যা পরিমাপ করে:",
+        prep: "প্রস্তুতি:",
+        backToDash: "ড্যাশবোর্ডে ফিরে যান",
+        seeHealthPlan: "হেলথ প্ল্যান দেখুন",
+        uploadTitle: "ল্যাব রিপোর্ট আপলোড করুন"
+    }
+};
 
 function ResultsContent() {
     const searchParams = useSearchParams();
@@ -23,6 +89,7 @@ function ResultsContent() {
 
     const [error, setError] = useState<string | null>(null);
     const [showUploadModal, setShowUploadModal] = useState(false);
+    const [language, setLanguage] = useState('English');
 
     useEffect(() => {
         if (visitId) {
@@ -47,7 +114,14 @@ function ResultsContent() {
 
                         // 2. Fetch Profile Summary & Language
                         let profileSummary = null;
-                        let language = 'English';
+
+                        // Fetch Language from local storage
+                        let currentLang = 'English';
+                        const savedLang = localStorage.getItem('checkup-language');
+                        if (savedLang && (savedLang === 'English' || savedLang === 'Bengali')) {
+                            currentLang = savedLang;
+                        }
+                        setLanguage(currentLang);
 
                         if (visitData.user_id) {
                             try {
@@ -55,12 +129,6 @@ function ResultsContent() {
                                 const profileData = await profileRes.json();
                                 if (profileData && profileData.status !== 'not_found') {
                                     profileSummary = `Age: ${profileData.dob ? new Date().getFullYear() - new Date(profileData.dob).getFullYear() : 'Unknown'}, Gender: ${profileData.gender || 'Unknown'}, Conditions: ${profileData.conditions?.join(', ')}, Meds: ${profileData.medications?.join(', ')}`;
-                                }
-
-                                const userRes = await fetch(`${API_BASE_URL}/api/users/${visitData.user_id}`);
-                                const userData = await userRes.json();
-                                if (userData && userData.language) {
-                                    language = userData.language;
                                 }
                             } catch (e) {
                                 console.warn("Profile fetch failed", e);
@@ -77,7 +145,7 @@ function ResultsContent() {
                                 refinements: visitData.refinements,
                                 confirmations: visitData.confirmations,
                                 profile_summary: profileSummary,
-                                language: language
+                                language: currentLang
                             }),
                         });
                         if (!predictRes.ok) throw new Error("Prediction failed");
@@ -93,7 +161,7 @@ function ResultsContent() {
                                     visit_id: visitId,
                                     diagnosis: data,
                                     profile_summary: profileSummary,
-                                    language: language
+                                    language: currentLang
                                 }),
                             });
                             if (testRes.ok) {
@@ -117,12 +185,14 @@ function ResultsContent() {
         }
     }, [visitId]);
 
+    const t = translations[language as keyof typeof translations] || translations.English;
+
     if (loading) {
         return (
             <div className={cn("min-h-screen flex items-center justify-center", isDark ? "bg-[#0B0F19]" : "bg-slate-50")}>
                 <div className="text-center">
                     <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
-                    <p className={isDark ? "text-slate-400" : "text-slate-600"}>Analyzing symptoms and clinical data...</p>
+                    <p className={isDark ? "text-slate-400" : "text-slate-600"}>{t.loading}</p>
                 </div>
             </div>
         );
@@ -133,10 +203,10 @@ function ResultsContent() {
             <div className={cn("min-h-screen flex items-center justify-center p-8", isDark ? "bg-[#0B0F19]" : "bg-slate-50")}>
                 <div className="text-center max-w-md">
                     <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                    <h2 className={cn("text-xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Analysis Failed</h2>
+                    <h2 className={cn("text-xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>{t.errorTitle}</h2>
                     <p className={cn("mb-6", isDark ? "text-slate-400" : "text-slate-600")}>{error}</p>
                     <button onClick={() => router.push('/dashboard/intake')} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold">
-                        Start New Checkup
+                        {t.errorBtn}
                     </button>
                 </div>
             </div>
@@ -151,12 +221,12 @@ function ResultsContent() {
             <div className={cn("min-h-screen flex items-center justify-center p-8", isDark ? "bg-[#0B0F19]" : "bg-slate-50")}>
                 <div className="text-center max-w-2xl break-words">
                     <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                    <h2 className={cn("text-xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Unexpected Result</h2>
+                    <h2 className={cn("text-xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>{t.unexpectedTitle}</h2>
                     <pre className={cn("text-left p-4 rounded-lg overflow-auto max-h-96 text-xs mb-6", isDark ? "bg-black/50 text-slate-300" : "bg-slate-100 text-slate-700")}>
                         {JSON.stringify(results, null, 2)}
                     </pre>
                     <button onClick={() => window.location.reload()} className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold">
-                        Retry
+                        {t.retryBtn}
                     </button>
                 </div>
             </div>
@@ -167,9 +237,9 @@ function ResultsContent() {
         <div className={cn("min-h-screen p-4 md:p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-4xl mx-auto">
                 <header className="mb-8">
-                    <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Analysis Results</h1>
+                    <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>{t.title}</h1>
                     <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>
-                        Based on your symptoms{visitLabs.length > 0 ? ', profile, and lab results.' : ' and profile.'}
+                        {visitLabs.length > 0 ? t.subtitleLabs : t.subtitleNoLabs}
                     </p>
                 </header>
 
@@ -178,8 +248,8 @@ function ResultsContent() {
                     <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl mb-8 flex items-start gap-3">
                         <AlertTriangle className="w-6 h-6 text-red-500 shrink-0 mt-0.5" />
                         <div>
-                            <h3 className="font-bold text-red-500 text-lg">High Urgency Detected</h3>
-                            <p className="text-red-400 text-sm mt-1">Please seek immediate medical attention. {results.redFlags?.join(', ')}</p>
+                            <h3 className="font-bold text-red-500 text-lg">{t.urgencyTitle}</h3>
+                            <p className="text-red-400 text-sm mt-1">{t.urgencyDesc} {results.redFlags?.join(', ')}</p>
                         </div>
                     </div>
                 )}
@@ -196,12 +266,12 @@ function ResultsContent() {
                                 <AlertTriangle className="w-8 h-8 text-white" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-bold mb-2">Emergency Warning Detected</h2>
+                                <h2 className="text-2xl font-bold mb-2">{t.emergencyTitle}</h2>
                                 <p className="text-red-100 mb-4 text-lg">
-                                    Your symptoms indicate a potentially serious condition that requires immediate medical attention.
+                                    {t.emergencyDesc}
                                 </p>
                                 <div className="bg-black/20 p-4 rounded-xl mb-4">
-                                    <h3 className="font-bold mb-2 uppercase text-xs tracking-wider opacity-80">Red Flags Identified:</h3>
+                                    <h3 className="font-bold mb-2 uppercase text-xs tracking-wider opacity-80">{t.redFlags}</h3>
                                     <ul className="list-disc list-inside space-y-1">
                                         {results.redFlags?.map((flag: string, i: number) => (
                                             <li key={i} className="font-medium">{flag}</li>
@@ -210,10 +280,10 @@ function ResultsContent() {
                                 </div>
                                 <div className="flex flex-wrap gap-4">
                                     <a href="tel:911" className="px-6 py-3 bg-white text-red-600 rounded-xl font-bold hover:bg-red-50 transition-colors flex items-center gap-2">
-                                        <Phone className="w-5 h-5" /> Call Emergency Services (911)
+                                        <Phone className="w-5 h-5" /> {t.callBtn}
                                     </a>
                                     <button className="px-6 py-3 bg-red-700 text-white rounded-xl font-bold hover:bg-red-800 transition-colors">
-                                        Find Nearest Hospital
+                                        {t.hospitalBtn}
                                     </button>
                                 </div>
                             </div>
@@ -257,7 +327,7 @@ function ResultsContent() {
                                             return "bg-slate-500/20 text-slate-500";
                                         })()
                                     )}>
-                                        {condition.probability} Match
+                                        {condition.probability} {t.match}
                                     </div>
                                 </div>
                                 <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
@@ -271,7 +341,7 @@ function ResultsContent() {
 
                             <div className="grid md:grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <span className="block text-xs font-bold uppercase tracking-wider mb-2 text-green-500">Matching Symptoms</span>
+                                    <span className="block text-xs font-bold uppercase tracking-wider mb-2 text-green-500">{t.symptomsMatched}</span>
                                     <ul className="space-y-1">
                                         {condition.matchingSymptoms?.map((s: string, i: number) => (
                                             <li key={i} className="flex items-center gap-2">
@@ -283,7 +353,7 @@ function ResultsContent() {
                                 </div>
                                 {condition.nonMatchingSymptoms?.length > 0 && (
                                     <div>
-                                        <span className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-500">Not Reported</span>
+                                        <span className="block text-xs font-bold uppercase tracking-wider mb-2 text-slate-500">{t.notMentioned}</span>
                                         <ul className="space-y-1">
                                             {condition.nonMatchingSymptoms?.map((s: string, i: number) => (
                                                 <li key={i} className="flex items-center gap-2 opacity-60">
@@ -311,14 +381,14 @@ function ResultsContent() {
                             <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
                                 <Activity className="w-5 h-5" />
                             </div>
-                            <h2 className={cn("text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>Analyzed Clinical Data</h2>
+                            <h2 className={cn("text-xl font-bold", isDark ? "text-white" : "text-slate-900")}>{t.labData}</h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {visitLabs.flatMap((l: any) => l.entries).map((entry: any, i: number) => (
                                 <div key={i} className={cn("p-3 rounded-lg flex justify-between items-center", isDark ? "bg-white/5" : "bg-slate-50")}>
                                     <div>
                                         <span className={cn("block text-sm font-medium", isDark ? "text-slate-200" : "text-slate-700")}>{entry.name}</span>
-                                        <span className={cn("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>Range: {entry.reference_range || 'N/A'}</span>
+                                        <span className={cn("text-xs", isDark ? "text-slate-400" : "text-slate-500")}>{t.range}: {entry.reference_range || 'N/A'}</span>
                                     </div>
                                     <div className="text-right">
                                         <span className={cn("block font-bold", isDark ? "text-white" : "text-slate-900")}>{entry.value} <span className="text-xs font-normal opacity-70">{entry.unit}</span></span>
@@ -343,10 +413,10 @@ function ResultsContent() {
                         </div>
                         <div>
                             <h3 className={cn("text-lg font-bold mb-1", isDark ? "text-white" : "text-slate-900")}>
-                                Want a more accurate diagnosis?
+                                {t.wantMoreAccurate}
                             </h3>
                             <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-600")}>
-                                Uploading your recent lab reports allows our AI to cross-reference your symptoms with clinical data for higher precision.
+                                {t.uploadDesc}
                             </p>
                         </div>
                     </div>
@@ -354,7 +424,7 @@ function ResultsContent() {
                         onClick={() => setShowUploadModal(true)}
                         className="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 whitespace-nowrap"
                     >
-                        Upload Lab Report
+                        {t.uploadBtn}
                     </button>
                 </motion.div>
 
@@ -362,12 +432,12 @@ function ResultsContent() {
                 {tests && tests.tests && (
                     <div className="mt-12">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>Recommended Tests</h2>
+                            <h2 className={cn("text-2xl font-bold", isDark ? "text-white" : "text-slate-900")}>{t.suggestedTests}</h2>
                             <button
                                 onClick={() => setShowUploadModal(true)}
                                 className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors"
                             >
-                                Upload Results
+                                {t.uploadBtn}
                             </button>
                         </div>
                         <div className="grid md:grid-cols-2 gap-6">
@@ -376,19 +446,19 @@ function ResultsContent() {
                                     <div className="flex justify-between items-start mb-3">
                                         <h3 className={cn("text-lg font-bold", isDark ? "text-white" : "text-slate-900")}>{test.name}</h3>
                                         {test.urgency === 'High' && (
-                                            <span className="px-2 py-1 rounded text-xs font-bold bg-red-500/20 text-red-500">Urgent</span>
+                                            <span className="px-2 py-1 rounded text-xs font-bold bg-red-500/20 text-red-500">{t.urgent}</span>
                                         )}
                                     </div>
                                     <p className={cn("text-sm mb-4", isDark ? "text-slate-400" : "text-slate-600")}>{test.purpose}</p>
 
                                     <div className="space-y-2 text-xs">
                                         <div className={cn("p-3 rounded-lg", isDark ? "bg-white/5" : "bg-slate-50")}>
-                                            <span className="font-bold block mb-1">What it measures:</span>
+                                            <span className="font-bold block mb-1">{t.measures}</span>
                                             <span className={isDark ? "text-slate-300" : "text-slate-700"}>{test.whatItMeasures}</span>
                                         </div>
                                         {test.prepInstructions && (
                                             <div className={cn("p-3 rounded-lg", isDark ? "bg-white/5" : "bg-slate-50")}>
-                                                <span className="font-bold block mb-1">Preparation:</span>
+                                                <span className="font-bold block mb-1">{t.prep}</span>
                                                 <span className={isDark ? "text-slate-300" : "text-slate-700"}>{test.prepInstructions}</span>
                                             </div>
                                         )}
@@ -407,7 +477,7 @@ function ResultsContent() {
                             isDark ? "bg-white/5 hover:bg-white/10 text-white" : "bg-slate-100 hover:bg-slate-200 text-slate-900"
                         )}
                     >
-                        Back to Dashboard
+                        {t.backToDash}
                     </button>
                     <button
                         onClick={() => router.push(`/dashboard/plan?visitId=${visitId}`)}
@@ -415,7 +485,7 @@ function ResultsContent() {
                             isDark ? "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/20" : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
                         )}
                     >
-                        View Health Plan <ArrowRight className="w-5 h-5" />
+                        {t.seeHealthPlan} <ArrowRight className="w-5 h-5" />
                     </button>
                 </div>
 
@@ -431,7 +501,7 @@ function ResultsContent() {
                             <X className="w-6 h-6" />
                         </button>
                         <div className="p-8">
-                            <h2 className={cn("text-2xl font-bold mb-6", isDark ? "text-white" : "text-slate-900")}>Upload Lab Results</h2>
+                            <h2 className={cn("text-2xl font-bold mb-6", isDark ? "text-white" : "text-slate-900")}>{t.uploadTitle}</h2>
                             <LabUploadForm
                                 visitId={visitId!}
                                 onSuccess={() => {

@@ -6,8 +6,32 @@ import { motion } from 'framer-motion';
 import { CheckCircle2, XCircle, HelpCircle, ArrowRight, Activity, Loader2, ArrowLeft } from 'lucide-react';
 import { cn, API_BASE_URL } from '@/lib/utils';
 import { useTheme } from '@/context/ThemeContext';
-
 import { Suspense } from 'react';
+
+const translations = {
+    English: {
+        loading: "Analyzing your symptoms...",
+        title: "Refine Symptoms",
+        subtitle: "Do you have any of these related symptoms? This helps improve accuracy.",
+        yes: "Yes",
+        no: "No",
+        unsure: "Unsure",
+        backBtn: "Back",
+        processingBtn: "Processing...",
+        analyzeBtn: "Analyze Results"
+    },
+    Bengali: {
+        loading: "আপনার লক্ষণগুলি বিশ্লেষণ করা হচ্ছে...",
+        title: "লক্ষণগুলি যাচাই করুন",
+        subtitle: "আপনার কি নিচের সম্পর্কিত লক্ষণগুলি আছে? এটি আমাদের সঠিক রোগ নির্ণয়ে সাহায্য করবে।",
+        yes: "হ্যাঁ",
+        no: "না",
+        unsure: "নিশ্চিত নই",
+        backBtn: "ফিরে যান",
+        processingBtn: "প্রসেস করা হচ্ছে...",
+        analyzeBtn: "ফলাফল বিশ্লেষণ করুন"
+    }
+};
 
 function RefineContent() {
     const searchParams = useSearchParams();
@@ -19,6 +43,7 @@ function RefineContent() {
     const [submitting, setSubmitting] = useState(false);
     const [groups, setGroups] = useState<any[]>([]);
     const [selections, setSelections] = useState<Record<string, string>>({});
+    const [language, setLanguage] = useState('English');
 
     useEffect(() => {
         if (visitId) {
@@ -38,15 +63,13 @@ function RefineContent() {
                             setSelections(savedSelections);
                         }
 
-                        // Fetch Language
-                        let language = 'English';
-                        if (visitData.user_id) {
-                            const userRes = await fetch(`${API_BASE_URL}/api/users/${visitData.user_id}`);
-                            const userData = await userRes.json();
-                            if (userData && userData.language) {
-                                language = userData.language;
-                            }
+                        // Fetch Language from local storage
+                        let currentLang = 'English';
+                        const savedLang = localStorage.getItem('checkup-language');
+                        if (savedLang && (savedLang === 'English' || savedLang === 'Bengali')) {
+                            currentLang = savedLang;
                         }
+                        setLanguage(currentLang);
 
                         // 2. Ask AI for refinements
                         const refineRes = await fetch(`${API_BASE_URL}/api/ai/refine-symptoms`, {
@@ -54,7 +77,7 @@ function RefineContent() {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 symptoms: visitData.extracted_data.symptoms,
-                                language: language
+                                language: currentLang
                             }),
                         });
                         const refineData = await refineRes.json();
@@ -100,12 +123,14 @@ function RefineContent() {
         }
     };
 
+    const t = translations[language as keyof typeof translations] || translations.English;
+
     if (loading) {
         return (
             <div className={cn("min-h-screen flex items-center justify-center", isDark ? "bg-[#0B0F19]" : "bg-slate-50")}>
                 <div className="text-center">
                     <Loader2 className="w-10 h-10 animate-spin text-blue-600 mx-auto mb-4" />
-                    <p className={isDark ? "text-slate-400" : "text-slate-600"}>Analyzing your symptoms...</p>
+                    <p className={isDark ? "text-slate-400" : "text-slate-600"}>{t.loading}</p>
                 </div>
             </div>
         );
@@ -115,8 +140,8 @@ function RefineContent() {
         <div className={cn("min-h-screen p-8 transition-colors duration-500", isDark ? "bg-[#0B0F19] text-slate-200" : "bg-slate-50 text-slate-900")}>
             <div className="max-w-3xl mx-auto">
                 <header className="mb-8">
-                    <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>Refine Symptoms</h1>
-                    <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>Do you have any of these related symptoms? This helps improve accuracy.</p>
+                    <h1 className={cn("text-3xl font-bold mb-2", isDark ? "text-white" : "text-slate-900")}>{t.title}</h1>
+                    <p className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>{t.subtitle}</p>
                 </header>
 
                 <div className="space-y-8">
@@ -139,7 +164,7 @@ function RefineContent() {
                                                         : isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                                 )}
                                             >
-                                                <CheckCircle2 className="w-4 h-4" /> Yes
+                                                <CheckCircle2 className="w-4 h-4" /> {t.yes}
                                             </button>
                                             <button
                                                 onClick={() => handleSelect(symptom, 'No')}
@@ -149,7 +174,7 @@ function RefineContent() {
                                                         : isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                                 )}
                                             >
-                                                <XCircle className="w-4 h-4" /> No
+                                                <XCircle className="w-4 h-4" /> {t.no}
                                             </button>
                                             <button
                                                 onClick={() => handleSelect(symptom, 'Unsure')}
@@ -159,7 +184,7 @@ function RefineContent() {
                                                         : isDark ? "bg-white/5 text-slate-400 hover:bg-white/10" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                                                 )}
                                             >
-                                                <HelpCircle className="w-4 h-4" /> Unsure
+                                                <HelpCircle className="w-4 h-4" /> {t.unsure}
                                             </button>
                                         </div>
                                     </div>
@@ -177,7 +202,7 @@ function RefineContent() {
                         )}
                     >
                         <ArrowLeft className="w-5 h-5" />
-                        Back
+                        {t.backBtn}
                     </button>
 
                     <button
@@ -189,10 +214,10 @@ function RefineContent() {
                         )}
                     >
                         {submitting ? (
-                            <>Processing...</>
+                            <>{t.processingBtn}</>
                         ) : (
                             <>
-                                Analyze Results
+                                {t.analyzeBtn}
                                 <ArrowRight className="w-5 h-5" />
                             </>
                         )}
