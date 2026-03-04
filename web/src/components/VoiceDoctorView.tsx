@@ -28,6 +28,7 @@ export default function VoiceDoctorView() {
     const recognitionRef = useRef<any>(null);
     const synthesisRef = useRef<any>(null);
     const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
+    const silenceTimerRef = useRef<Required<NodeJS.Timeout> | null>(null);
 
     // Refs to access latest state in closures (speech recognition callback)
     const selectedProfileIdRef = useRef(selectedProfileId);
@@ -60,7 +61,7 @@ export default function VoiceDoctorView() {
             const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
             if (SpeechRecognition) {
                 recognitionRef.current = new SpeechRecognition();
-                recognitionRef.current.continuous = false;
+                recognitionRef.current.continuous = true;
                 recognitionRef.current.interimResults = true;
                 recognitionRef.current.lang = language === 'Bengali' ? 'bn-BD' : 'en-US';
 
@@ -84,12 +85,34 @@ export default function VoiceDoctorView() {
                 };
 
                 recognitionRef.current.onresult = (event: any) => {
-                    const current = event.resultIndex;
-                    const transcriptText = event.results[current][0].transcript;
-                    setTranscript(transcriptText);
-                    if (event.results[current].isFinal) {
-                        handleSend(transcriptText);
+                    let fullTranscript = '';
+                    let hasFinal = false;
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        fullTranscript += event.results[i][0].transcript;
+                        if (event.results[i].isFinal) hasFinal = true;
                     }
+
+                    // We need to keep appending to the active transcript
+                    // However, some browsers reset results array or keep appending. 
+                    // Best way is to accumulate everything from 0 to current length
+                    let entireTranscript = '';
+                    for (let i = 0; i < event.results.length; i++) {
+                        entireTranscript += event.results[i][0].transcript;
+                    }
+
+                    setTranscript(entireTranscript);
+
+                    if (silenceTimerRef.current) {
+                        clearTimeout(silenceTimerRef.current);
+                    }
+
+                    // If it's listening, use silence detection (2 seconds) to mark end of talking
+                    silenceTimerRef.current = setTimeout(() => {
+                        if (entireTranscript.trim().length > 0) {
+                            handleSend(entireTranscript);
+                        }
+                    }, 2000);
                 };
             } else {
                 console.warn("Speech Recognition API not supported in this browser.");
@@ -139,6 +162,12 @@ export default function VoiceDoctorView() {
 
         if (isListening) {
             recognitionRef.current?.stop();
+            if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+
+            // Allow manual submission of final buffered text React state is hard to access here, 
+            // but we usually send via the timer. If they manually click stop, we just stop. 
+            // Alternatively, they can just pause talking for 2s. We won't eagerly send here 
+            // to avoid duplicate sends if the timer just fired.
         } else {
             setTranscript('');
             setResponse('');

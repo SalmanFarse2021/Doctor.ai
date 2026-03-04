@@ -1142,12 +1142,12 @@ async def speak_chunks(request: TTSChunksRequest):
             else:
                 print(f"[TTS-CHUNKS] Generating chunk {chunk_id}: {sentence[:40]}...")
                 start_time = time.time()
-                
                 response = await openai_client.audio.speech.create(
                     model=TTS_MODEL,
                     voice=request.voice,
                     input=sentence,
-                    response_format="mp3"
+                    response_format="mp3",
+                    speed=1.15
                 )
                 
                 audio_bytes = response.content
