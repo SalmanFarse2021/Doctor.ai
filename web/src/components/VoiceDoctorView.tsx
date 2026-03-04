@@ -21,7 +21,7 @@ export default function VoiceDoctorView() {
     const [caption, setCaption] = useState(''); // Full text for display
     const [isResetting, setIsResetting] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false); // Collapsible settings
-    const [showCaption, setShowCaption] = useState(true); // Toggle captions
+    const [showCaption, setShowCaption] = useState(false); // Toggle captions
     const [shouldStartNewSession, setShouldStartNewSession] = useState(false); // Flag for new session
 
 
