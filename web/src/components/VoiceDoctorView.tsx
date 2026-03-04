@@ -107,12 +107,12 @@ export default function VoiceDoctorView() {
                         clearTimeout(silenceTimerRef.current);
                     }
 
-                    // If it's listening, use silence detection (2 seconds) to mark end of talking
+                    // If it's listening, use silence detection (4 seconds) to mark end of talking
                     silenceTimerRef.current = setTimeout(() => {
                         if (entireTranscript.trim().length > 0) {
                             handleSend(entireTranscript);
                         }
-                    }, 2000);
+                    }, 4000);
                 };
             } else {
                 console.warn("Speech Recognition API not supported in this browser.");
@@ -164,13 +164,14 @@ export default function VoiceDoctorView() {
             recognitionRef.current?.stop();
             if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
 
-            // Allow manual submission of final buffered text React state is hard to access here, 
-            // but we usually send via the timer. If they manually click stop, we just stop. 
-            // Alternatively, they can just pause talking for 2s. We won't eagerly send here 
-            // to avoid duplicate sends if the timer just fired.
+            // Allow manual submission of final buffered text
+            if (transcript.trim().length > 0 && status !== 'processing') {
+                handleSend(transcript);
+            }
         } else {
             setTranscript('');
             setResponse('');
+            setCaption('');
             recognitionRef.current?.start();
         }
     };
